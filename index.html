@@ -99,11 +99,42 @@ img{display:block;}
     radial-gradient(1.6px 1.6px at 60% 85%, #fff 50%, transparent),
     linear-gradient(165deg, #06183c 0%, #0c2a5e 60%, #113f83 100%);
 }
-/* forest 地圖等高線 */
+/* forest 地圖等高線＋羊皮紙 */
 .app-root.theme-forest{
   background:
-    repeating-radial-gradient(circle at 30% 20%, transparent 0 26px, rgba(34,74,61,.05) 26px 27px),
+    repeating-radial-gradient(circle at 78% 8%, transparent 0 30px, rgba(34,74,61,.06) 30px 31px, transparent 31px 60px),
+    repeating-radial-gradient(circle at 20% 88%, transparent 0 24px, rgba(77,111,56,.05) 24px 25px, transparent 25px 50px),
+    radial-gradient(circle at 30% 20%, rgba(255,252,237,.5), transparent 40%),
     linear-gradient(165deg, #f0e2bc 0%, #e6dcb0 100%);
+}
+/* berry 莓果甜點：奶油粉底＋柔霧圓點/泡泡場景 */
+.app-root.theme-berry{
+  background:
+    radial-gradient(circle at 12% 6%, rgba(237,93,140,.14), transparent 30%),
+    radial-gradient(circle at 90% 92%, rgba(140,113,223,.12), transparent 36%),
+    radial-gradient(70px 70px at 84% 16%, rgba(255,255,255,.55), transparent 70%),
+    radial-gradient(46px 46px at 16% 42%, rgba(255,214,230,.5), transparent 70%),
+    radial-gradient(38px 38px at 78% 62%, rgba(230,214,255,.45), transparent 70%),
+    linear-gradient(165deg, #fff8f5 0%, #f6eef8 100%);
+}
+/* peach 蜜桃彩虹：蜜桃橘×薄荷綠柔彩虹弧線場景 */
+.app-root.theme-peach{
+  background:
+    radial-gradient(140% 90% at 50% -30%, rgba(244,132,120,.16) 0 12%, transparent 13%),
+    radial-gradient(140% 90% at 50% -34%, rgba(255,201,168,.16) 14% 26%, transparent 27%),
+    radial-gradient(140% 90% at 50% -38%, rgba(143,214,180,.16) 28% 40%, transparent 41%),
+    radial-gradient(60px 60px at 82% 20%, rgba(255,255,255,.55), transparent 70%),
+    linear-gradient(165deg, #fff9f0 0%, #ecf8f2 100%);
+}
+/* blueberry 藍莓雲朵：霧藍底＋雲朵場景 */
+.app-root.theme-blueberry{
+  background:
+    radial-gradient(90px 54px at 22% 16%, rgba(255,255,255,.75), transparent 72%),
+    radial-gradient(70px 44px at 40% 12%, rgba(255,255,255,.6), transparent 72%),
+    radial-gradient(110px 60px at 82% 30%, rgba(255,255,255,.55), transparent 74%),
+    radial-gradient(80px 48px at 68% 78%, rgba(255,255,255,.5), transparent 74%),
+    radial-gradient(circle at 90% 8%, rgba(116,142,233,.14), transparent 34%),
+    linear-gradient(165deg, #f6f8ff 0%, #f5ecfb 100%);
 }
 
 .screen{ padding:18px 20px 20px; padding-bottom:106px; min-height:100vh; }
@@ -185,7 +216,8 @@ img{display:block;}
   border-radius:22px 52px 22px 22px;
   padding:24px 22px 22px; box-shadow:var(--shadow); overflow:hidden;
 }
-.hero-bar{position:absolute;top:22px;right:22px;width:140px;height:7px;border-radius:99px;
+/* 修改⑯：改成卡片頂部一條乾淨的漸層進度條（滿版、貼齊上緣，不再歪斜浮在右側） */
+.hero-bar{position:absolute;top:0;left:0;right:0;height:6px;
   background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 60%,#fff),#8c71df);}
 .hero .headline{margin-top:6px;line-height:1.14;}
 .hero .headline .l1{font-size:27px;font-weight:500;}
@@ -196,7 +228,9 @@ img{display:block;}
 .hero .pig{
   position:absolute;left:50%;bottom:0;transform:translateX(-50%);
   width:230px;height:230px;object-fit:contain;
-  filter:drop-shadow(0 16px 24px rgba(180,110,140,.28));
+  /* 修改⑯：用乾淨的 314px 原格圖（mascotSrc(0)），收緊陰影＋微調對比讓邊緣更銳利 */
+  filter:drop-shadow(0 14px 18px rgba(180,110,140,.22)) contrast(1.05) saturate(1.06);
+  image-rendering:auto;
 }
 .hero .float{
   position:absolute; background:var(--surface); padding:11px 15px;border-radius:15px;
@@ -235,12 +269,32 @@ img{display:block;}
 .theme-card .chk{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:99px;background:var(--accent);
   color:#fff;display:none;align-items:center;justify-content:center;font-size:14px;font-weight:900;}
 .theme-card.sel .chk{display:flex;}
-/* 主題縮圖漸層 */
-.sw-berry{background:linear-gradient(135deg,#f6d3e6,#8c71df);}
-.sw-peach{background:linear-gradient(135deg,#f7c9a8,#8fd6b4);}
-.sw-blueberry{background:linear-gradient(135deg,#b9c6f2,#e9def4);}
-.sw-stellar{background:linear-gradient(135deg,#0b2a5e,#123f86);}
-.sw-forest{background:linear-gradient(135deg,#d9d3a3,#7d8a52);}
+/* 主題縮圖：各主題實際場景的迷你預覽（不只純色） */
+.tsw,.swatch{background-repeat:no-repeat;}
+.sw-berry{background:
+  radial-gradient(10px 10px at 74% 24%,rgba(255,255,255,.85),transparent 70%),
+  radial-gradient(7px 7px at 30% 58%,rgba(255,214,230,.9),transparent 70%),
+  radial-gradient(6px 6px at 62% 74%,rgba(230,214,255,.9),transparent 70%),
+  linear-gradient(135deg,#ffd7e6,#c9b6f0);}
+.sw-peach{background:
+  radial-gradient(150% 90% at 50% -40%,#f48478 0 20%,#ffc9a8 20% 42%,#8fd6b4 42% 64%,transparent 65%),
+  linear-gradient(135deg,#fff2e6,#e3f6ee);}
+.sw-blueberry{background:
+  radial-gradient(16px 10px at 30% 34%,rgba(255,255,255,.95),transparent 74%),
+  radial-gradient(20px 12px at 66% 60%,rgba(255,255,255,.9),transparent 74%),
+  radial-gradient(12px 8px at 78% 28%,rgba(255,255,255,.85),transparent 74%),
+  linear-gradient(135deg,#c8d3f7,#ece2f7);}
+.sw-stellar{background:
+  radial-gradient(1.3px 1.3px at 26% 30%,#fff 60%,transparent),
+  radial-gradient(1.3px 1.3px at 68% 22%,#cfe3ff 60%,transparent),
+  radial-gradient(1.1px 1.1px at 46% 66%,#fff 60%,transparent),
+  radial-gradient(1.5px 1.5px at 80% 74%,#fff 60%,transparent),
+  radial-gradient(circle at 30% 24%,rgba(43,145,255,.5),transparent 46%),
+  linear-gradient(135deg,#06183c,#123f86);}
+.sw-forest{background:
+  repeating-radial-gradient(circle at 74% 20%,transparent 0 7px,rgba(34,74,61,.22) 7px 8px,transparent 8px 15px),
+  repeating-radial-gradient(circle at 24% 82%,transparent 0 6px,rgba(77,111,56,.2) 6px 7px,transparent 7px 13px),
+  linear-gradient(135deg,#e6dcb0,#8b9a5a);}
 
 /* ================= READY intro ================= */
 .steplist{padding:8px 6px;margin-top:6px;}
@@ -347,6 +401,28 @@ img{display:block;}
 .src-item .track{height:6px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden;}
 .src-item .track>i{display:block;height:100%;background:var(--accent);border-radius:99px;}
 .src-item small{display:block;font-size:12px;color:var(--muted);margin-top:8px;}
+/* 記帳：分類明細 */
+.cat-list{display:flex;flex-direction:column;gap:14px;}
+.cat-row{display:flex;align-items:center;gap:10px;}
+.cat-row .dotc{width:11px;height:11px;border-radius:99px;flex:none;}
+.cat-row .cn{font-size:14px;font-weight:800;width:74px;flex:none;}
+.cat-row .cbar{flex:1;height:8px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden;}
+.cat-row .cbar>i{display:block;height:100%;border-radius:99px;}
+.cat-row .cv{font-size:13px;font-weight:800;width:66px;text-align:right;flex:none;}
+.cat-row .cp{font-size:12px;font-weight:800;color:var(--muted);width:34px;text-align:right;flex:none;}
+.ledger-empty{font-size:14px;color:var(--muted);font-weight:700;line-height:1.6;padding:10px 0;}
+/* 記帳：支出紀錄列 */
+.exp-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);}
+.exp-row:first-of-type{border-top:none;}
+.exp-row .ei{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none;}
+.exp-row .et{flex:1;} .exp-row .et b{font-size:15px;font-weight:800;} .exp-row .et small{display:block;font-size:12px;color:var(--muted);margin-top:2px;}
+.exp-row .ev{font-size:16px;font-weight:900;color:var(--ink);}
+.exp-row .edel{width:28px;height:28px;border-radius:99px;background:var(--surface-2);color:var(--muted);font-size:13px;font-weight:900;flex:none;}
+/* 記帳：新增支出 modal 分類格 */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.cat-pick{padding:14px 6px;border-radius:16px;background:var(--surface);border:2px solid var(--line);text-align:center;color:var(--ink);}
+.cat-pick.sel{border-color:var(--accent);background:var(--accent-soft);}
+.cat-pick .em{font-size:24px;display:block;} .cat-pick b{display:block;font-size:13px;font-weight:800;margin-top:6px;}
 
 /* ================= 圖鑑 ================= */
 .gal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-top:6px;}
@@ -493,15 +569,28 @@ img{display:block;}
 
 /* 存錢獸宮格 step2 */
 .beast-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-height:52vh;overflow-y:auto;padding:2px;}
-.beast-cell{background:var(--surface);border:2.5px solid transparent;border-radius:18px;padding:12px 6px 10px;text-align:center;transition:.15s;}
+.beast-cell{position:relative;background:var(--surface);border:2.5px solid transparent;border-radius:18px;padding:12px 6px 10px;text-align:center;transition:.15s;}
 .beast-cell.sel{border-color:var(--accent);background:var(--accent-soft);}
-.beast-cell img{width:78px;height:78px;object-fit:contain;margin:0 auto;}
+.beast-cell img{width:78px;height:78px;object-fit:contain;margin:0 auto;transition:transform .18s ease;}
 .beast-cell span{display:block;font-size:13px;font-weight:800;margin-top:6px;}
+/* 桌面：滑鼠 hover 放大看細節 */
+@media(hover:hover){ .beast-cell:hover{z-index:6;} .beast-cell:hover img{transform:scale(1.9);filter:drop-shadow(0 10px 18px rgba(120,90,110,.3));} }
+/* 手機：右上角放大鏡，點了看大圖 */
+.beast-cell .zoom-btn{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:99px;background:var(--surface-2);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--accent);z-index:3;}
+.beast-zoom{position:fixed;inset:0;z-index:130;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(30,20,28,.72);backdrop-filter:blur(6px);padding:30px;}
+.beast-zoom .box{background:var(--surface);border-radius:28px;padding:26px 24px 22px;text-align:center;box-shadow:var(--shadow);max-width:300px;width:100%;border:1px solid var(--line);}
+.beast-zoom .box img{width:210px;height:210px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 14px 22px rgba(150,110,140,.3));}
+.beast-zoom .box b{display:block;font-size:22px;font-weight:800;margin-top:10px;}
+.beast-zoom .box .z-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
 .hidden-banner{display:flex;align-items:center;gap:14px;margin-top:14px;padding:16px 18px;border-radius:20px;
   background:var(--accent-pale);border:1.5px dashed color-mix(in srgb,#8c71df 40%,transparent);}
 .hidden-banner .n{width:56px;height:56px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#8c71df;flex:none;}
 .hidden-banner .tx{flex:1;} .hidden-banner .tx b{font-size:17px;font-weight:800;} .hidden-banner .tx small{display:block;font-size:12px;color:var(--muted);margin-top:3px;}
 .hidden-banner .arr{color:#8c71df;font-size:20px;}
+.hidden-banner.locked{opacity:.62;cursor:not-allowed;filter:grayscale(.25);}
+.hidden-banner.locked .n{font-size:24px;color:#8c71df;}
 
 /* 表單 step3 */
 .field{margin-bottom:16px;}
@@ -520,6 +609,10 @@ img{display:block;}
 .oath-row::-webkit-scrollbar{display:none;}
 .oath-row button{flex:none;padding:14px 16px;border-radius:16px;background:var(--surface);border:2px solid var(--line);font-size:14px;font-weight:700;color:var(--muted);white-space:nowrap;}
 .oath-row button.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent);}
+.reminder-field{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-soft);}
+.reminder-field .ic{width:44px;height:44px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex:none;}
+.reminder-field .ic svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.reminder-field .tx{flex:1;} .reminder-field .tx b{font-size:15px;font-weight:800;} .reminder-field .tx small{display:block;font-size:12px;color:var(--muted);margin-top:3px;}
 
 /* 方法卡 step4 */
 .method-card{display:flex;align-items:center;gap:16px;padding:20px;border-radius:22px;border:2.5px solid transparent;background:var(--surface);box-shadow:var(--shadow-soft);margin-bottom:14px;}
@@ -565,16 +658,28 @@ img{display:block;}
 .detail-oath{border-left:4px solid var(--accent);background:var(--accent-pale);border-radius:0 14px 14px 0;padding:16px 18px;font-weight:800;margin-bottom:16px;}
 
 /* 達陣慶祝 全屏 */
-.celebrate{position:fixed;inset:0;z-index:120;overflow:hidden;
-  background:radial-gradient(circle at 50% 30%, var(--accent-soft), var(--bg) 70%);
+.celebrate{position:fixed;inset:0;z-index:120;overflow-y:auto;overflow-x:hidden;
+  /* 完全不透明：底層實色 --bg，上層再疊主色光暈，任何主題都不透出底下頁面 */
+  background:
+    radial-gradient(circle at 50% 30%, var(--accent-soft), transparent 62%),
+    linear-gradient(165deg, var(--bg) 0%, var(--bg-2) 100%);
   display:flex;flex-direction:column;justify-content:center;padding:20px;}
+/* stellar 深色主題慶祝頁：補星點，維持全不透明 */
+.theme-stellar .celebrate{
+  background:
+    radial-gradient(circle at 50% 26%, rgba(43,145,255,.34), transparent 55%),
+    radial-gradient(1.4px 1.4px at 20% 30%, #fff 50%, transparent),
+    radial-gradient(1.4px 1.4px at 72% 22%, #cfe3ff 50%, transparent),
+    radial-gradient(1.2px 1.2px at 40% 62%, #fff 50%, transparent),
+    radial-gradient(1.6px 1.6px at 62% 82%, #fff 50%, transparent),
+    linear-gradient(165deg, #06183c 0%, #0c2a5e 60%, #113f83 100%);}
 .celebrate .cx{position:absolute;top:20px;right:20px;z-index:5;}
 .cel-badge{display:flex;align-items:center;gap:16px;justify-content:center;background:var(--surface);border-radius:20px;padding:14px 24px;box-shadow:var(--shadow-soft);align-self:center;}
 .cel-badge b{font-size:34px;font-weight:900;color:var(--accent);} .cel-badge .r small{display:block;font-size:14px;font-weight:800;} .cel-badge .r i{font-size:11px;font-weight:900;color:var(--muted);letter-spacing:2px;font-style:normal;}
 .cel-mascot{position:relative;height:300px;display:flex;align-items:center;justify-content:center;margin:10px 0;}
 .cel-mascot .halo{position:absolute;width:280px;height:280px;border-radius:99px;background:radial-gradient(circle,#fff,transparent 70%);z-index:0;}
 .cel-mascot .beast{width:230px;height:230px;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 14px 26px rgba(150,110,140,.3));}
-.cel-mascot .crown{position:absolute;top:2px;left:50%;transform:translateX(-50%);width:98px;z-index:5;filter:drop-shadow(0 6px 9px rgba(150,110,60,.30));pointer-events:none;}
+.cel-mascot .crown{position:absolute;top:26px;left:50%;transform:translateX(-50%);width:104px;z-index:5;filter:drop-shadow(0 6px 9px rgba(150,110,60,.30));pointer-events:none;}
 .cel-goal{display:flex;align-items:center;gap:14px;padding:16px 18px;margin:0 auto 6px;max-width:340px;width:100%;}
 .cel-goal .mk{width:52px;height:52px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;overflow:hidden;}
 .cel-goal .mk img{width:100%;height:100%;object-fit:contain;}
@@ -593,16 +698,18 @@ img{display:block;}
 /* 分享圖卡 modal */
 .share-preview{padding:14px;border-radius:26px;background:var(--surface);box-shadow:var(--shadow);margin:6px 0 4px;}
 .share-card{border-radius:20px;padding:24px 22px;text-align:center;position:relative;overflow:hidden;
-  background:linear-gradient(160deg,var(--surface),var(--accent-pale));}
+  /* 圖卡永遠淺底（＝下載出來的樣子），文字固定深色，任何主題都清楚 */
+  background:linear-gradient(160deg,#ffffff,#f6eefb);color:#33242c;}
 .share-card .kicker{font-size:15px;font-weight:900;color:var(--accent);}
 .share-card .beastwrap{position:relative;height:220px;display:flex;align-items:center;justify-content:center;margin:6px 0;}
 .share-card .beastwrap img.beast{width:190px;height:190px;object-fit:contain;position:relative;z-index:2;filter:drop-shadow(0 12px 20px rgba(150,110,140,.24));}
 .share-card .beastwrap .crown{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:78px;z-index:5;filter:drop-shadow(0 5px 7px rgba(150,110,60,.28));pointer-events:none;}
 .share-card .gname{font-size:22px;font-weight:800;margin:6px 0;}
 .share-card .big{font-size:28px;font-weight:900;color:var(--accent);line-height:1.3;margin:12px 0 8px;}
-.share-card .small{font-size:14px;color:var(--muted);font-weight:700;}
+.share-card .gname{color:#33242c;}
+.share-card .small{font-size:14.5px;color:#5f4652;font-weight:800;line-height:1.5;}
 .share-card .pct{font-size:32px;font-weight:900;color:var(--accent);}
-.share-card .sig{border-top:1px dashed var(--line);margin-top:16px;padding-top:14px;font-size:12px;color:var(--muted);font-weight:700;}
+.share-card .sig{border-top:1px dashed rgba(90,60,75,.22);margin-top:16px;padding-top:14px;font-size:12.5px;color:#5f4652;font-weight:800;}
 .share-conf{position:absolute;inset:0;pointer-events:none;}
 
 /* toast */
@@ -611,6 +718,7 @@ img{display:block;}
   box-shadow:0 10px 30px rgba(0,0,0,.3);animation:toastIn .3s ease;}
 @keyframes toastIn{from{opacity:0;transform:translate(-50%,10px);}to{opacity:1;transform:translate(-50%,0);}}
 
+.nowrap{white-space:nowrap;}
 .hidden{display:none !important;}
 </style>
 </head>
@@ -666,6 +774,7 @@ const ls = {
 /* 執行期狀態 */
 const S = {
   goals: ls.getJSON(K.goals, []),
+  expenses: ls.getJSON(K.expenses, []),
   theme: ls.get(K.theme, 'berry'),
   name:  ls.get(K.name, '你'),
   streak: parseInt(ls.get(K.streak,'0'))||0,
@@ -690,7 +799,27 @@ function daysLeft(dateStr){ if(!dateStr) return 1; const end=new Date(dateStr+'T
 function dailySuggest(g){ const rem=Math.max(0,(g.target||0)-(g.saved||0)); const d=Math.max(1,daysLeft(g.date)); return Math.ceil(rem/d); }
 function pct(g){ if(!g.target) return 0; return Math.min(100, Math.round((g.saved/g.target)*100)); }
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function save(){ ls.set(K.goals,S.goals); ls.set(K.theme,S.theme); ls.set(K.name,S.name); ls.set(K.streak,String(S.streak)); ls.set(K.reminder,S.reminderOn?'on':'off'); }
+function save(){ ls.set(K.goals,S.goals); ls.set(K.expenses,S.expenses); ls.set(K.theme,S.theme); ls.set(K.name,S.name); ls.set(K.streak,String(S.streak)); ls.set(K.reminder,S.reminderOn?'on':'off'); }
+/* 記帳分類（含配色，供圓餅與圖例用） */
+const CATS=[
+  {id:'餐飲', c:'#ff8fb3', icon:'🍜'},
+  {id:'交通', c:'#748ee9', icon:'🚌'},
+  {id:'購物', c:'#8c71df', icon:'🛍️'},
+  {id:'娛樂', c:'#f5a623', icon:'🎮'},
+  {id:'生活', c:'#57c9b0', icon:'🏠'},
+  {id:'其他', c:'#9aa0a6', icon:'✨'},
+];
+function catMeta(id){ return CATS.find(c=>c.id===id)||CATS[CATS.length-1]; }
+/* 依週/月/年篩選支出（週＝最近7天、月＝本月、年＝今年） */
+function expensesInPeriod(seg){
+  const now=new Date();
+  return S.expenses.filter(x=>{
+    const d=new Date((x.date||'')+'T00:00:00'); if(isNaN(d)) return false;
+    if(seg==='年') return d.getFullYear()===now.getFullYear();
+    if(seg==='月') return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
+    const diff=(now-d)/86400000; return diff>=-1 && diff<7; // 週：最近7天
+  });
+}
 function mascotSrc(i){ return MASCOTS[i]||MASCOTS[0]; }
 function activeGoal(){ // 最早到期的進行中目標
   const act = S.goals.filter(g=>g.status!=='已完成');
@@ -835,8 +964,7 @@ function onbTheme(){
       ${dots(1)}
     </div>
     <div class="eyebrow" style="display:flex;align-items:center;gap:10px"><span style="width:24px;height:2px;background:var(--accent);display:inline-block"></span>CHOOSE YOUR WORLD</div>
-    <h1 class="h1" style="margin:12px 0">先選一個，<br>你會想天天打開的宇宙。</h1>
-    <p class="muted" style="font-size:14px;line-height:1.6;font-weight:600">主題會改變整個 App 的場景與版型；存錢獸永遠維持原來的通透顏色。</p>
+    <h1 class="h1" style="margin:12px 0 18px">選擇主題</h1>
     <div class="card theme-preview">
       <div class="mark">${cur.mark}</div>
       <div class="swatch ${cur.sw}"></div>
@@ -892,8 +1020,8 @@ function tabHome(){
         <img class="p" src="${mascotSrc(0)}" alt="麻糬豬">
         <img class="d" src="${mascotSrc(3)}" alt="酪梨龍">
       </div>
-      <p>選一個想帶回家的本命，存錢獸會陪你把大目標拆成每天的一小步。</p>
-      <button class="primary" data-act="openCreate">建立第一個目標 →</button>
+      <p>選一隻存錢獸陪你存到夢想</p>
+      <button class="primary" data-act="openCreate">開始</button>
     </div>`;
   } else {
     const ty=TYPES.find(t=>t.id===g.type)||TYPES[0];
@@ -901,7 +1029,7 @@ function tabHome(){
       <div class="top">
         <div class="heart">♥</div>
         <span class="pill">${g.type}</span>
-        <div class="more" data-act="detail" data-id="${g.id}">•••</div>
+        <div style="width:38px"></div>
       </div>
       <div class="goal-mascot"><img src="${mascotSrc(g.mascot)}" alt=""></div>
       <div class="duetxt">最早到期・剩 ${Math.max(0,daysLeft(g.date))} 天</div>
@@ -913,42 +1041,74 @@ function tabHome(){
         <div class="s r"><small>目標金額</small><b>${money(g.target)}</b></div>
       </div>
       <div class="bar"><i style="width:${pct(g)}%"></i></div>
-      <div class="suggest"><div class="l"><span class="d"></span>今天建議</div><b>${money(dailySuggest(g))}</b></div>
+      <div class="suggest"><div class="l"><span class="d"></span>今日目標</div><b>${money(dailySuggest(g))}</b></div>
       <div class="btn-2">
         <button class="primary" data-act="deposit" data-id="${g.id}">去存錢</button>
         <button class="ghost" data-act="detail" data-id="${g.id}">看詳細</button>
-      </div>
-      <div class="mini-2">
-        <button data-act="openCreate">新增目標</button>
-        <button data-act="tab" data-id="ledger">消費統計</button>
       </div>
     </div>`;
   }
   return `${appbar()}
     <div class="datehint">${dateZH()}</div>
-    <div class="home-title"><h1 class="h1">今天離夢想更近了嗎？</h1><button class="fab" data-act="openCreate">＋</button></div>
+    <div class="home-title"><h1 class="h1">今天蹲了嗎？</h1><button class="fab" data-act="openCreate">＋</button></div>
     ${main}`;
 }
 
 /* ---------- 記帳 ---------- */
 function tabLedger(){
+  const seg=S.ledgerSeg;
+  const segLabel={'週':'本週','月':'本月','年':'今年'}[seg]||'本月';
+  // 期間內支出，依分類彙總
+  const list=expensesInPeriod(seg);
+  const total=list.reduce((a,x)=>a+(x.amount||0),0);
+  const byCat={}; CATS.forEach(c=>byCat[c.id]=0);
+  list.forEach(x=>{ byCat[x.category]=(byCat[x.category]||0)+(x.amount||0); });
+  // 圓餅 conic-gradient
+  let acc=0, stops=[];
+  CATS.forEach(c=>{ const v=byCat[c.id]||0; if(v<=0) return; const from=acc/total*100; acc+=v; const to=acc/total*100; stops.push(`${c.c} ${from}% ${to}%`); });
+  const donutBg = total>0 ? `conic-gradient(${stops.join(',')})` : `conic-gradient(color-mix(in srgb,var(--ink) 8%,transparent) 0 100%)`;
+  // 可省金額：娛樂＋購物視為可再想的彈性花費
+  const savable=(byCat['娛樂']||0)+(byCat['購物']||0);
+  const savePct=total? Math.round(savable/total*100):0;
+  // 存款來源分佈（沿用各目標 sources）
   const totalSrc={今日省下:0,自己存:0,外來贊助:0};
   S.goals.forEach(g=>{ if(g.sources) for(const k in totalSrc) totalSrc[k]+=(g.sources[k]||0); });
   const sum=totalSrc.今日省下+totalSrc.自己存+totalSrc.外來贊助;
   const p=k=> sum? Math.round(totalSrc[k]/sum*100):0;
   const srcMeta=[['今日省下','忍住沒花的錢'],['自己存','從零用錢或收入主動存入'],['外來贊助','親友給你的應援']];
+  // 分類明細列
+  const catRows=CATS.filter(c=>(byCat[c.id]||0)>0).map(c=>{
+    const v=byCat[c.id]; const pc=total?Math.round(v/total*100):0;
+    return `<div class="cat-row"><span class="dotc" style="background:${c.c}"></span>
+      <span class="cn">${c.icon} ${c.id}</span><span class="cbar"><i style="width:${pc}%;background:${c.c}"></i></span>
+      <span class="cv">${money(v)}</span><span class="cp">${pc}%</span></div>`;
+  }).join('') || `<div class="ledger-empty">這個期間還沒有支出紀錄，按右上角 ＋ 記一筆吧！</div>`;
+  // 最近幾筆
+  const recent=list.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,5).map(x=>{
+    const c=catMeta(x.category);
+    return `<div class="exp-row"><span class="ei" style="background:${c.c}22;color:${c.c}">${c.icon}</span>
+      <div class="et"><b>${c.id}</b><small>${(x.date||'').replace(/-/g,'/')}</small></div>
+      <span class="ev">-${money(x.amount)}</span>
+      <button class="edel" data-act="delExpense" data-id="${x.id}">✕</button></div>`;
+  }).join('');
   return `${appbar()}
     <div class="eyebrow" style="color:var(--muted);letter-spacing:0;font-size:14px">把錢的去向看懂</div>
     <div class="home-title"><h1 class="h1">記帳分析</h1><button class="fab" data-act="ledgerAdd">＋</button></div>
-    <div class="seg">${['週','月','年'].map(s=>`<button class="${S.ledgerSeg===s?'on':''}" data-act="ledgerSeg" data-id="${s}">${s}</button>`).join('')}</div>
+    <div class="seg">${['週','月','年'].map(s=>`<button class="${seg===s?'on':''}" data-act="ledgerSeg" data-id="${s}">${s}</button>`).join('')}</div>
     <div class="card donut-card">
-      <div class="donut" style="--p:${sum?25:0}%"><div class="in"><b>NT$0</b><small>本月支出</small></div></div>
+      <div class="donut" style="background:${donutBg}"><div class="in"><b>${money(total)}</b><small>${segLabel}支出</small></div></div>
       <div class="ledger-note">
-        <span class="warn">可再想一下 NT$0</span>
-        <h3>0% 的花費可能變成夢想進度</h3>
-        <span class="save-link">把可省金額存起來 →</span>
+        <span class="warn">可再想一下 ${money(savable)}</span>
+        <h3>${savePct}% 的花費<br>可能變成夢想進度</h3>
+        ${savable>0?`<span class="save-link" data-act="saveSavable" data-v="${savable}">把可省金額存起來 →</span>`:`<span class="save-link muted">記一筆支出就能看到分析</span>`}
       </div>
     </div>
+    <div class="card src-card">
+      <div class="lead">${segLabel}花在哪，一眼看清楚</div>
+      <h2 class="h2">消費分布</h2>
+      <div class="cat-list">${catRows}</div>
+    </div>
+    ${recent?`<div class="card src-card"><div class="lead">最近的支出</div><h2 class="h2">支出紀錄</h2>${recent}</div>`:''}
     <div class="card src-card">
       <div class="lead">分開看，才知道哪種方法最適合你</div>
       <h2 class="h2">存款來源</h2>
@@ -1012,10 +1172,10 @@ function tabDonate(){
     <div class="card donate-card">
       <div class="toprow"><span class="pill">跪求火力應援</span><span class="th">${cur.name}</span></div>
       <div class="orbit"><img src="${mascotSrc(g.mascot)}" alt=""></div>
-      <div class="msg">我正在努力存錢蹲<br>「${esc(g.name)}」</div>
+      <div class="msg">我正在努力存錢蹲<br><span class="nowrap">「${esc(g.name)}」</span></div>
       <div class="prog"><small>目前達成</small><b>${pct(g)}%</b></div>
       <div class="bar"><i style="width:${pct(g)}%"></i></div>
-      <div class="plea">如果我最近表現不錯，懇求乾爹乾媽抖內應援！</div>
+      <div class="plea">如果我最近表現不錯，<br><span class="nowrap">懇求乾爹乾媽抖內應援！</span></div>
       <div class="foot"><b>蹲個本命</b><small>挑個存錢獸，把錢錢變成喜歡的模樣</small></div>
     </div>
     <p class="donate-hint">圖卡只顯示這個目標與進度，不會公開記帳內容。</p>
@@ -1032,22 +1192,16 @@ function tabMe(){
   return `${appbar()}
     <div class="card profile-card">
       <div class="big-av">${esc(S.name.slice(0,1))}</div>
-      <div class="info"><div class="role">存錢練習生</div><b>${esc(S.name)}</b><small>已和存錢獸一起努力 ${days} 天</small></div>
+      <div class="info"><b data-act="editName" style="cursor:pointer">${esc(S.name)} <span style="font-size:15px;color:var(--accent)">✎</span></b><small>已和存錢獸一起努力 ${days} 天</small></div>
       <div class="lv">Lv. 1</div>
     </div>
 
-    <!-- 整合後的精簡設定條：每日存錢提醒 + 資料灰字 -->
+    <!-- 資料灰字（每日提醒已移到各目標的表單頁） -->
     <div class="card me-strip">
-      <div class="row">
-        <div class="ic"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
-        <div class="tx"><b>每日存錢提醒</b><small>晚上 9:00 提醒記錄</small></div>
-        <div class="switch ${S.reminderOn?'on':''}" data-act="toggleReminder"></div>
-      </div>
-      <div class="datanote">資料只存在你的裝置，分享時只會帶出你的本命目標，其他資料不會顯示</div>
+      <div class="datanote" style="border-top:none;padding-top:4px">每日存錢提醒可在各個目標的「編輯本命」頁分別設定。資料只存在你的裝置，分享時只會帶出你的本命目標，其他資料不會顯示。</div>
     </div>
 
     <div class="card me-section">
-      <div class="lead">每款都有獨立場景、卡片與版型語言</div>
       <div class="h2">主題版型 <span class="palette"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 2a10 10 0 1 0 0 20c1.7 0 2-1.5 1.2-2.4-.8-.9-.5-2.1.7-2.1H17a5 5 0 0 0 5-5c0-5-4.5-8.5-10-8.5z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg></span></div>
       <div class="theme-grid">
         ${THEMES.map((t,i)=>`<div class="theme-card ${t.id===S.theme?'sel':''} ${i===4?'full':''}" data-act="pickThemeLive" data-id="${t.id}">
@@ -1080,7 +1234,25 @@ function viewModal(){
   if(m.type==='detail')  return modalDetail();
   if(m.type==='celebrate') return modalCelebrate();
   if(m.type==='share')   return modalShare();
+  if(m.type==='ledgerAdd') return modalLedgerAdd();
   return '';
+}
+/* ---- 新增支出 modal ---- */
+function modalLedgerAdd(){
+  const m=S.modal;
+  const cat=m.category||'餐飲';
+  const amt=m.amount!=null?m.amount:'';
+  const date=m.date||todayISO();
+  return sheetWrap(`
+    <div class="sheet-head"><div><div class="eyebrow">記一筆支出</div><h2>今天花了多少？</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
+    <label style="display:block;font-size:15px;font-weight:800;margin-bottom:8px">金額</label>
+    <div class="dep-amt"><span>NT$</span><input id="expAmt" inputmode="numeric" placeholder="0" value="${amt}"></div>
+    <div class="quick-row">${[50,100,300,500].map(v=>`<button data-act="expQuick" data-v="${v}">+${v}</button>`).join('')}</div>
+    <label style="display:block;font-size:15px;font-weight:800;margin:6px 0 10px">分類</label>
+    <div class="cat-grid">${CATS.map(c=>`<button class="cat-pick ${cat===c.id?'sel':''}" data-act="pickCat" data-id="${c.id}"><span class="em">${c.icon}</span><b>${c.id}</b></button>`).join('')}</div>
+    <label style="display:block;font-size:15px;font-weight:800;margin:16px 0 8px">日期</label>
+    <input class="inp" type="date" id="expDate" value="${date}">
+    <button class="primary" style="margin-top:18px" data-act="doAddExpense">記一筆</button>`);
 }
 function sheetWrap(inner){ return `<div class="overlay"><div class="backdrop" data-act="closeModal"></div><div class="sheet">${inner}</div></div>`; }
 
@@ -1088,55 +1260,85 @@ function sheetWrap(inner){ return `<div class="overlay"><div class="backdrop" da
 function modalCreate(){
   const m=S.modal; const d=m.draft; const step=m.step;
   const steps4=`<div class="steps4">${[0,1,2,3].map(i=>`<i class="${i<=step?'on':''}"></i>`).join('')}</div>`;
-  const head=`<div class="sheet-head"><div><div class="eyebrow">步驟 ${step+1} / 4</div><h2>養一隻新的存錢獸</h2></div>
+  const head=`<div class="sheet-head"><div><div class="eyebrow">步驟 ${step+1} / 4</div></div>
     <button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">${steps4}`;
   let body='', foot='';
 
   if(step===0){ // 選類型（修改④：標題改、下一步上移）
-    body=`<h2 class="h2" style="margin-bottom:16px">選擇要蹲的本命</h2>
+    body=`<h2 class="h2" style="margin-bottom:16px">選擇本命類型</h2>
       <div class="type-grid">${TYPES.map(t=>`<button class="type-card ${d.type===t.id?'sel':''}" style="--type-bg:${t.bg};--type-c:${t.c}" data-act="pickType" data-id="${t.id}">
         <div class="ic"><svg viewBox="0 0 24 24">${t.icon}</svg></div><b>${t.id}</b><small>${t.desc}</small></button>`).join('')}</div>`;
     // 下一步上移：緊接卡片下方，不用捲動
     foot=`<div class="sheet-foot" style="margin-top:18px"><button class="ghost" data-act="closeModal">上一步</button><button class="primary" data-act="createNext">下一步</button></div>`;
   }
   else if(step===1){ // 挑存錢獸（修改⑤：橫幅只留隱藏版、下一步上移）
-    body=`<h2 class="h2" style="margin-bottom:14px">選擇你的存錢獸</h2>
-      <div class="beast-grid">${NAMES.map((n,i)=>`<button class="beast-cell ${d.mascot===i?'sel':''}" data-act="pickBeast" data-id="${i}">
+    body=`<h2 class="h2" style="margin-bottom:6px">選擇你的存錢獸</h2>
+      <p class="muted" style="font-size:13px;font-weight:700;margin-bottom:12px">桌面把滑鼠移上去、手機點右上角 ⤢ 可放大看細節</p>
+      <div class="beast-grid">${NAMES.map((n,i)=> i===9 ? '' : `<button class="beast-cell ${d.mascot===i?'sel':''}" data-act="pickBeast" data-id="${i}">
+        <span class="zoom-btn" data-act="zoomBeast" data-id="${i}">⤢</span>
         <img src="${mascotSrc(i)}" alt=""><span>${n}</span></button>`).join('')}</div>
-      <div class="hidden-banner"><div class="n">30</div><div class="tx"><b>隱藏版存錢獸</b><small>連續存錢 30 天，可解鎖 1 款</small></div><div class="arr">→</div></div>`;
+      <div class="hidden-banner locked" aria-disabled="true"><div class="n">🔒</div><div class="tx"><b>隱藏版存錢獸</b><small>連續存錢 30 天，可解鎖 1 款（尚未解鎖）</small></div><div class="arr">🔒</div></div>`;
     foot=`<div class="sheet-foot" style="margin-top:14px"><button class="ghost" data-act="createPrev">上一步</button><button class="primary" data-act="createNext">下一步</button></div>`;
   }
   else if(step===2){ // 編輯目標（修改⑥）
-    body=`<div class="field"><label>名稱</label><input class="inp" id="fName" placeholder="例如：日本來回機票" value="${esc(d.name)}"></div>
+    body=`<div class="field"><label>本命名稱</label><input class="inp" id="fName" placeholder="例如：日本來回機票" value="${esc(d.name)}"></div>
       <div class="field"><label>目標金額</label><div class="inp-money"><span>NT$</span><input id="fTarget" inputmode="numeric" placeholder="" value="${d.target||''}"></div></div>
       <div class="field"><label>達成日期</label><input class="inp" type="date" id="fDate" value="${d.date||''}"></div>
       <div class="field"><label>本命圖片</label>
         <div class="upload"><div class="thumb">${d.imageData?`<img src="${d.imageData}">`:`<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`}</div>
-          <div class="tx"><b>上傳本命照片</b><small>會顯示在目標、存款、分享與達陣圖</small></div>
+          <div class="tx"><b>上傳本命照片</b></div>
           <label class="pick">選擇<input type="file" accept="image/*" id="fFile" style="display:none"></label></div></div>
       <div class="field"><label>本命圖片或連結（選填）</label>
         <div class="inp-money"><span style="color:#8c71df;display:flex"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span><input id="fUrl" placeholder="https://..." value="${esc(d.imageUrl)}"></div></div>
       <div class="field"><label>選一句宣誓語</label>
         <div class="oath-row">${OATHS.map(o=>`<button class="${d.oath===o?'sel':''}" data-act="pickOath" data-oath="${esc(o)}">${o}</button>`).join('')}</div></div>
-      <div class="field"><label>或自己寫一句</label><input class="inp" id="fOath" value="${esc(d.oath)}"></div>`;
+      <div class="field"><label>或自己寫一句</label><input class="inp" id="fOath" value="${esc(d.oath)}"></div>
+      <div class="field"><label>每日存錢提醒</label>
+        <div class="reminder-field"><div class="ic"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
+          <div class="tx"><b>提醒我存這個目標</b><small>晚上 9:00 提醒記錄</small></div>
+          <div class="switch ${d.reminderOn?'on':''}" data-act="toggleDraftReminder"></div></div></div>`;
     foot=`<div class="sheet-foot"><button class="ghost" data-act="createPrev">上一步</button><button class="primary" data-act="createNext">下一步</button></div>`;
   }
   else { // step4 選存錢法
     const tgt=parseInt(d.target)||0; const dd=Math.max(1,daysLeft(d.date||todayISO()));
     const daily=Math.ceil(tgt/dd)||0;
-    body=`<h2 class="h2">選擇無痛存錢法</h2>
-      <p class="muted" style="font-size:14px;margin:6px 0 16px;font-weight:700">依目標金額與日期試算，建立後仍可調整。</p>
-      <button class="method-card ${d.mode==='平均存錢'?'sel':''}" data-act="pickMode" data-id="平均存錢">
-        <div class="ic">＝</div><div class="tx"><b>平均存錢</b><small>每期固定，最好掌握</small></div><div class="chk">✓</div></button>
-      <button class="method-card ${d.mode==='階梯式存錢'?'sel':''}" data-act="pickMode" data-id="階梯式存錢">
-        <div class="ic">↗</div><div class="tx"><b>階梯式存錢</b><small>前少後多，每週慢慢增加</small></div><div class="chk">✓</div></button>
-      <div class="calc-card"><h4>固定金額</h4>
+    const isLadder=d.mode==='階梯式存錢';
+    let calc;
+    if(isLadder){
+      // 階梯式：前少後多，每週遞增（等差級數，總和=目標金額）
+      const weeks=Math.max(1,Math.ceil(dd/7));
+      const base=tgt/(weeks*(weeks+1)/2);          // 第一週金額
+      const first=Math.round(base);
+      const last=Math.round(base*weeks);
+      const inc=weeks>1?Math.round((last-first)/(weeks-1)):0;
+      calc=`<div class="calc-card"><h4>階梯式試算・共 ${weeks} 週遞增</h4>
+        <div class="r"><small>第 1 週（最輕鬆）</small><b>${money(first)}</b></div>
+        <div class="r"><small>每週遞增</small><b>+${money(inc)}</b></div>
+        <div class="r"><small>最後一週</small><b>${money(last)}</b></div>
+        <div class="r" style="border-top:1px dashed var(--line);margin-top:6px;padding-top:12px"><small>合計目標</small><b>${money(tgt)}</b></div></div>`;
+    } else {
+      calc=`<div class="calc-card"><h4>固定金額・每期一樣</h4>
         <div class="r"><small>每天</small><b>${money(daily)}</b></div>
         <div class="r"><small>每週</small><b>${money(daily*7)}</b></div>
         <div class="r"><small>每月</small><b>${money(daily*30)}</b></div></div>`;
-    foot=`<div class="sheet-foot"><button class="ghost" data-act="createPrev">上一步</button><button class="primary" data-act="createFinish">讓存錢獸入住</button></div>`;
+    }
+    body=`<h2 class="h2">選擇無痛存錢法</h2>
+      <p class="muted" style="font-size:14px;margin:6px 0 16px;font-weight:700">依目標金額與日期試算，建立後仍可調整。</p>
+      <button class="method-card ${!isLadder?'sel':''}" data-act="pickMode" data-id="平均存錢">
+        <div class="ic">＝</div><div class="tx"><b>平均存錢</b><small>每期固定，最好掌握</small></div><div class="chk">✓</div></button>
+      <button class="method-card ${isLadder?'sel':''}" data-act="pickMode" data-id="階梯式存錢">
+        <div class="ic">↗</div><div class="tx"><b>階梯式存錢</b><small>前少後多，每週慢慢增加</small></div><div class="chk">✓</div></button>
+      ${calc}`;
+    foot=`<div class="sheet-foot"><button class="ghost" data-act="createPrev">上一步</button><button class="primary" data-act="createFinish">蹲起來</button></div>`;
   }
-  return sheetWrap(head+body+foot);
+  let zoom='';
+  if(m.zoom!=null){
+    zoom=`<div class="beast-zoom" data-act="closeZoom"><div class="box">
+      <img src="${mascotSrc(m.zoom)}" alt=""><b>${NAMES[m.zoom]}</b>
+      <div class="z-acts"><button class="ghost" data-act="closeZoom">關閉</button>
+      <button class="primary" data-act="pickBeastZoom" data-id="${m.zoom}">選這隻</button></div></div></div>`;
+  }
+  return sheetWrap(head+body+foot)+zoom;
 }
 
 /* ---- 存款 modal ---- */
@@ -1147,7 +1349,7 @@ function modalDeposit(){
   const srcOpt=[['今日省下','忍住沒花'],['自己存','零用錢／收入'],['外來贊助','親友應援']];
   return sheetWrap(`
     <div class="sheet-head"><div><div class="eyebrow">記一筆存款</div><h2>為「${esc(g.name)}」存一筆</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
-    <div class="dep-goal"><div class="mk"><img src="${mascotSrc(g.mascot)}"></div><div><b>${esc(g.name)}</b><small>${NAMES[g.mascot]}陪你一起存</small></div></div>
+    <div class="dep-goal"><div class="mk"><img src="${mascotSrc(g.mascot)}"></div><div><b>${esc(g.name)}</b><small>${NAMES[g.mascot]}陪你一起存錢</small></div></div>
     <div class="dep-2"><div class="b"><small>已存金額</small><b>${money(g.saved)}</b></div><div class="b"><small>目標金額</small><b>${money(g.target)}</b></div></div>
     <div class="bar"><i style="width:${pct(g)}%"></i></div>
     <label style="display:block;font-size:15px;font-weight:800;margin:14px 0 8px">這次要存多少？</label>
@@ -1155,7 +1357,7 @@ function modalDeposit(){
     <div class="quick-row">${[50,100,200,500].map(v=>`<button data-act="quickAdd" data-v="${v}">+${v}</button>`).join('')}</div>
     <label style="display:block;font-size:15px;font-weight:800;margin-bottom:10px">這筆錢從哪裡來？</label>
     <div class="src-row">${srcOpt.map(([k,d])=>`<button class="${src===k?'sel':''}" data-act="pickSource" data-id="${k}"><b>${k}</b><small>${d}</small></button>`).join('')}</div>
-    <button class="primary" data-act="doDeposit">去存錢</button>`);
+    <button class="primary" data-act="doDeposit">存入</button>`);
 }
 
 /* ---- 目標詳情 ---- */
@@ -1215,9 +1417,9 @@ function modalShare(){
     card=`<div class="share-card" id="shareCardEl">
       <div class="kicker">跪求火力應援</div>
       <div class="beastwrap"><img class="beast" src="${mascotSrc(g.mascot)}"></div>
-      <div class="gname">我正在努力存錢蹲「${esc(g.name)}」</div>
+      <div class="gname">我正在努力存錢蹲<span class="nowrap">「${esc(g.name)}」</span></div>
       <div class="big">目前 <span class="pct">${pct(g)}%</span></div>
-      <div class="small">如果我最近表現不錯，懇求乾爹乾媽抖內應援！</div>
+      <div class="small">如果我最近表現不錯，<span class="nowrap">懇求乾爹乾媽抖內應援！</span></div>
       <div class="sig">蹲個本命｜讓存錢獸陪你存到夢想</div>
     </div>`;
   }
@@ -1225,7 +1427,7 @@ function modalShare(){
     <div class="sheet-head"><div><div class="eyebrow">先預覽，再決定傳送或儲存</div><h2>${title}</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
     <div class="share-preview">${card}</div>
     <div class="sheet-foot" style="grid-template-columns:1fr 1fr;margin-top:16px">
-      <button class="primary" data-act="saveCard" data-id="${g.id}" data-variant="${variant}">→ 傳送圖卡</button>
+      <button class="primary" data-act="sendCard" data-id="${g.id}" data-variant="${variant}">→ 傳送圖卡</button>
       <button class="ghost" data-act="saveCard" data-id="${g.id}" data-variant="${variant}"><svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg> 儲存圖片</button>
     </div>
     <button class="textlink" data-act="closeModal">返回修改</button>`);
@@ -1239,9 +1441,12 @@ function drawShareCard(g, variant, cb){
   const cur=THEMES.find(t=>t.id===S.theme)||THEMES[0];
   // 讀主題色
   const rootStyle=getComputedStyle($('#root'));
-  const accent=rootStyle.getPropertyValue('--accent').trim()||'#ed5d8c';
-  const ink=rootStyle.getPropertyValue('--ink').trim()||'#49343e';
-  const muted=rootStyle.getPropertyValue('--muted').trim()||'#967e86';
+  let accent=rootStyle.getPropertyValue('--accent').trim()||'#ed5d8c';
+  // 圖卡底永遠是白/淺色：文字一律用固定深色，避免深色主題 ink/muted 是近白色→在白底上看不見
+  const ink='#33242c';           // 深色主標
+  const muted='#5f4652';         // 加深的說明字（原本 muted 太淡）
+  // 若主題主色偏淺，改用穩定的深粉，確保白底可讀
+  if(accent==='#2b91ff') accent='#1f6fd6';
   // 背景
   const grad=ctx.createLinearGradient(0,0,0,H); grad.addColorStop(0,'#ffffff'); grad.addColorStop(1, rootStyle.getPropertyValue('--accent-pale').trim()||'#f3edff');
   ctx.fillStyle=grad; roundRect(ctx,0,0,W,H,48); ctx.fill();
@@ -1262,11 +1467,11 @@ function drawShareCard(g, variant, cb){
     ctx.fillStyle=accent; ctx.font='900 52px "PingFang TC",sans-serif';
     if(isCel){ ctx.fillText('YA！！終於蹲到我的本命囉～～', W/2, y); }
     else{ ctx.fillText(`目前 ${pct(g)}%`, W/2, y); }
-    y+=60;
-    ctx.fillStyle=muted; ctx.font='700 26px "PingFang TC",sans-serif';
+    y+=64;
+    ctx.fillStyle=muted; ctx.font='800 28px "PingFang TC",sans-serif';
     ctx.fillText(isCel?'感謝我自己，也感謝乾爹乾媽的抖內～':'如果我最近表現不錯，懇求乾爹乾媽抖內應援！', W/2, y);
-    ctx.fillStyle=muted; ctx.font='700 22px "PingFang TC",sans-serif';
-    ctx.fillText('蹲個本命｜讓存錢獸陪你存到夢想', W/2, H-50);
+    ctx.fillStyle=muted; ctx.font='800 24px "PingFang TC",sans-serif';
+    ctx.fillText('蹲個本命｜讓存錢獸陪你存到夢想', W/2, H-46);
     cb(cv);
   };
   img.onerror=()=>cb(cv);
@@ -1334,8 +1539,12 @@ document.addEventListener('click', e=>{
     case 'openCreate': openCreate(); render(); break;
     case 'pickType': S.modal.draft.type=id; render(); break;
     case 'pickBeast': S.modal.draft.mascot=parseInt(id); render(); break;
+    case 'zoomBeast': e.stopPropagation(); S.modal.zoom=parseInt(id); render(); break;
+    case 'closeZoom': S.modal.zoom=null; render(); break;
+    case 'pickBeastZoom': S.modal.draft.mascot=parseInt(id); S.modal.zoom=null; render(); break;
     case 'pickOath': S.modal.draft.oath=t.dataset.oath; render(); break;
     case 'pickMode': S.modal.draft.mode=id; render(); break;
+    case 'toggleDraftReminder': syncForm(); S.modal.draft.reminderOn=!S.modal.draft.reminderOn; render(); break;
     case 'createNext': createNext(); break;
     case 'createPrev': syncForm(); S.modal.step--; render(); break;
     case 'createFinish': createFinish(); break;
@@ -1351,6 +1560,7 @@ document.addEventListener('click', e=>{
     case 'collectBeast': collectBeast(id); break;
     case 'share': S.modal={type:'share', goalId:id, variant:t.dataset.variant||'donate'}; render(); break;
     case 'saveCard': saveCard(id, t.dataset.variant); break;
+    case 'sendCard': sendCard(id, t.dataset.variant); break;
     case 'copyLink': copyLink(); break;
     /* gallery */
     case 'galFilter': S.galFilter=id; render(); break;
@@ -1358,9 +1568,15 @@ document.addEventListener('click', e=>{
     case 'delGoal': delGoal(id); break;
     /* ledger */
     case 'ledgerSeg': S.ledgerSeg=id; render(); break;
-    case 'ledgerAdd': toast('記帳功能開發中'); break;
+    case 'ledgerAdd': S.modal={type:'ledgerAdd', category:'餐飲', amount:null, date:todayISO()}; render(); break;
+    case 'pickCat': syncExpForm(); S.modal.category=id; render(); break;
+    case 'expQuick': { const inp=$('#expAmt'); inp.value=(parseInt(inp.value)||0)+parseInt(t.dataset.v); S.modal.amount=parseInt(inp.value); break; }
+    case 'doAddExpense': doAddExpense(); break;
+    case 'delExpense': delExpense(id); break;
+    case 'saveSavable': { const g=activeGoal(); if(!g){ toast('先建立一個目標才能存喔'); break; } S.modal={type:'deposit', goalId:g.id, amount:parseInt(t.dataset.v)||0, source:'今日省下'}; render(); break; }
     /* me */
     case 'toggleReminder': S.reminderOn=!S.reminderOn; save(); render(); toast(S.reminderOn?'每日存錢提醒已開啟':'每日存錢提醒已關閉'); break;
+    case 'editName': { const nm=prompt('輸入你的名字：', S.name==='你'?'':S.name); if(nm!=null){ const v=nm.trim(); S.name=v||'你'; ls.set(K.name,S.name); save(); render(); toast('名字已更新'); } break; }
     case 'pickThemeLive': applyTheme(id); save(); render(); break;
     case 'widgetToast': toast(activeGoal()?'Widget 設定已開啟':'先建立一個目標吧'); break;
     case 'restart': if(confirm('要回到第一次遇見存錢獸的畫面嗎？（你的目標會保留）')){ S.onboarded=false; S.onbStep=0; ls.set(K.onboarding,''); render(); } break;
@@ -1375,10 +1591,13 @@ document.addEventListener('change', e=>{
   }
 });
 /* 存款金額輸入即時記錄 */
-document.addEventListener('input', e=>{ if(e.target.id==='depAmt') S.modal.amount=parseInt(e.target.value)||0; });
+document.addEventListener('input', e=>{
+  if(e.target.id==='depAmt') S.modal.amount=parseInt(e.target.value)||0;
+  if(e.target.id==='expAmt' && S.modal) S.modal.amount=parseInt(e.target.value)||0;
+});
 
 /* ---- 動作實作 ---- */
-function openCreate(){ S.modal={type:'create', step:0, draft:{type:'供奉本命',mascot:0,name:'',target:'',date:'',imageData:null,imageUrl:'',oath:OATHS[0],mode:'平均存錢'}}; }
+function openCreate(){ S.modal={type:'create', step:0, draft:{type:'供奉本命',mascot:0,name:'',target:'',date:'',imageData:null,imageUrl:'',oath:OATHS[0],mode:'平均存錢',reminderOn:true}}; }
 function syncForm(){ // 把 step3 表單值存回 draft
   const d=S.modal.draft; if(!d) return;
   const nm=$('#fName'); if(nm) d.name=nm.value;
@@ -1401,6 +1620,7 @@ function createFinish(){
   const g={ id:'goal-'+Date.now(), name:d.name.trim(), target:parseInt(d.target)||0, saved:0,
     start:todayISO(), date:d.date, status:'進行中', type:d.type, mascot:d.mascot,
     oath:d.oath||OATHS[0], mode:d.mode, imageData:d.imageData||'', imageUrl:d.imageUrl||'',
+    reminderOn:d.reminderOn!==false,
     sources:{今日省下:0,自己存:0,外來贊助:0} };
   S.goals.push(g); save(); S.modal=null; S.tab='home'; render();
   toast('新目標已入住首頁與圖鑑');
@@ -1419,9 +1639,21 @@ function doDeposit(){
   else { S.modal=null; render(); toast('存款已記錄，離夢想更近囉'); }
 }
 function collectBeast(id){ const g=S.goals.find(x=>x.id===id); if(g) g.status='已完成'; save(); S.modal=null; S.tab='gallery'; render(); toast('已收進本命圖鑑'); }
+/* ---- 記帳：新增/刪除支出 ---- */
+function syncExpForm(){ const m=S.modal; if(!m) return; const a=$('#expAmt'); if(a) m.amount=parseInt(a.value)||0; const d=$('#expDate'); if(d) m.date=d.value||m.date; }
+function doAddExpense(){
+  syncExpForm();
+  const amt=parseInt(($('#expAmt')||{}).value)||0;
+  if(amt<=0){ toast('輸入支出金額'); return; }
+  const date=($('#expDate')||{}).value||todayISO();
+  const cat=S.modal.category||'其他';
+  S.expenses.push({ id:'exp-'+Date.now(), amount:amt, category:cat, date:date });
+  save(); S.modal=null; render(); toast('已記一筆支出');
+}
+function delExpense(id){ S.expenses=S.expenses.filter(x=>x.id!==id); save(); render(); toast('已刪除這筆支出'); }
 function editGoal(id){ // 用建立流程 step3 編輯
   const g=S.goals.find(x=>x.id===id); if(!g) return;
-  S.modal={type:'create', step:2, editId:id, draft:{type:g.type,mascot:g.mascot,name:g.name,target:String(g.target),date:g.date,imageData:g.imageData||null,imageUrl:g.imageUrl||'',oath:g.oath,mode:g.mode}};
+  S.modal={type:'create', step:2, editId:id, draft:{type:g.type,mascot:g.mascot,name:g.name,target:String(g.target),date:g.date,imageData:g.imageData||null,imageUrl:g.imageUrl||'',oath:g.oath,mode:g.mode,reminderOn:g.reminderOn!==false}};
   // 覆寫 finish 行為由 editId 判斷
   render();
 }
@@ -1437,13 +1669,33 @@ function saveCard(id,variant){
     },'image/png');
   });
 }
+/* 傳送圖卡：優先叫系統分享（可傳給 LINE / IG…），不支援就退回下載，都不會把人丟到 blob 頁 */
+function sendCard(id,variant){
+  const g=S.goals.find(x=>x.id===id); if(!g) return;
+  toast('產生圖卡中…');
+  drawShareCard(g,variant,cv=>{
+    cv.toBlob(async blob=>{ if(!blob){toast('產生失敗');return;}
+      const fname=(variant==='celebration'?'達陣_':'求抖內_')+g.name+'.png';
+      const file=new File([blob],fname,{type:'image/png'});
+      try{
+        if(navigator.canShare && navigator.canShare({files:[file]})){
+          await navigator.share({files:[file], title:'蹲個本命', text:variant==='celebration'?'我蹲到本命囉～':'跪求火力應援！'});
+          toast('已開啟分享'); return;
+        }
+      }catch(e){ if(e&&e.name==='AbortError'){return;} }
+      // 退回：直接下載
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname; a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href),3000); toast('已儲存圖卡，可再手動傳送');
+    },'image/png');
+  });
+}
 
 /* 覆寫 createFinish 處理編輯情境 */
 const _origFinish=createFinish;
 createFinish=function(){
   const m=S.modal;
   if(m.editId){ const g=S.goals.find(x=>x.id===m.editId); const d=m.draft;
-    if(g){ g.name=d.name.trim()||g.name; g.target=parseInt(d.target)||g.target; g.date=d.date||g.date; g.type=d.type; g.mascot=d.mascot; g.oath=d.oath; g.mode=d.mode; g.imageData=d.imageData||g.imageData; g.imageUrl=d.imageUrl||g.imageUrl; }
+    if(g){ g.name=d.name.trim()||g.name; g.target=parseInt(d.target)||g.target; g.date=d.date||g.date; g.type=d.type; g.mascot=d.mascot; g.oath=d.oath; g.mode=d.mode; g.reminderOn=d.reminderOn!==false; g.imageData=d.imageData||g.imageData; g.imageUrl=d.imageUrl||g.imageUrl; }
     save(); S.modal=null; render(); toast('目標已更新'); return;
   }
   _origFinish();
