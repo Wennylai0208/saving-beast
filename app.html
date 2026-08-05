@@ -1140,7 +1140,7 @@ function tabHome(){
       others=`<div class="eyebrow" style="display:block;margin:24px 0 4px">MY SQUAD</div>
         <h2 class="h2" style="margin-bottom:12px">你的其他存錢獸</h2>
         ${rest.map(o=>`<div class="card atlas-card home-pick" data-act="pinGoal" data-id="${o.id}">
-          <img src="${mascotSrc(o.mascot)}" alt="">
+          <div class="beast-fill sm" style="--fp:${pct(o)}%"><img class="base" src="${mascotSrc(o.mascot)}" alt=""><img class="fill" src="${mascotSrc(o.mascot)}" alt=""><div class="waterline"></div></div>
           <div class="info"><b>${esc(o.name)}</b><small>${money(o.saved)} / ${money(o.target)}</small>
             <div class="track"><i style="width:${pct(o)}%"></i></div>
           </div>
