@@ -488,6 +488,11 @@ img{display:block;}
 .st-未完成{background:#f6d7d5;color:#a5402f;}
 .atlas-acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;}
 .atlas-acts button{font-size:12px;font-weight:800;color:var(--muted);padding:4px 10px;border-radius:10px;background:var(--surface-2);}
+/* 圖鑑卡片：左滑顯示編輯/放冰箱/刪除，不再常駐佔位 */
+.atlas-swipe{position:relative;overflow:hidden;border-radius:var(--radius-lg);margin-bottom:12px;}
+.atlas-swipe-front{margin-bottom:0;position:relative;z-index:1;touch-action:pan-y;transition:transform .22s cubic-bezier(.4,0,.2,1);will-change:transform;}
+.atlas-acts-bg{position:absolute;top:0;right:0;bottom:0;margin-top:0;flex-wrap:nowrap;align-items:center;padding:0 16px;background:color-mix(in srgb,var(--ink) 5%,var(--surface));}
+.atlas-acts-bg button{padding:8px 12px;white-space:nowrap;}
 
 /* ================= 求抖內 ================= */
 .donate-card{padding:22px 20px 26px;position:relative;overflow:hidden;text-align:center;}
@@ -1217,7 +1222,7 @@ function tabLedger(){
     ${recent?`<div class="card src-card"><div class="lead">最近的支出</div><h2 class="h2">支出紀錄</h2>${recent}</div>`:''}
     <div class="card src-card">
       <div class="lead">分開看，才知道哪種方法最適合你</div>
-      <h2 class="h2">存款來源</h2>
+      <h2 class="h2">本命金來源</h2>
       ${srcMeta.map(([k,d])=>`<div class="src-item"><b>${k}</b><div class="pc">${p(k)}%</div>
         <div class="track"><i style="width:${p(k)}%"></i></div><small>${d}</small></div>`).join('')}
     </div>`;
@@ -1235,13 +1240,15 @@ function tabGallery(){
   // 圖鑑：全部都在，依建立時間新到舊排列
   let list=S.goals.slice().sort((a,b)=>goalTime(b)-goalTime(a));
   if(S.galFilter!=='全部') list=list.filter(g=>goalStatus(g)===S.galFilter);
-  const cards = list.length ? list.map(g=>{ const st=goalStatus(g); return `<div class="card atlas-card">
-      <div class="beast-fill sm" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div>
-      <div class="info"><b>${esc(g.name)}</b><small>${money(g.saved)} / ${money(g.target)}</small>
-        <div class="track"><i style="width:${pct(g)}%"></i></div>
-        <div class="atlas-acts"><button data-act="editGoal" data-id="${g.id}">編輯</button>${st!=='冰箱'&&st!=='已完成'?`<button data-act="freezeGoal" data-id="${g.id}">放進冰箱</button>`:''}<button data-act="delGoal" data-id="${g.id}">刪除</button></div>
+  const cards = list.length ? list.map(g=>{ const st=goalStatus(g); return `<div class="atlas-swipe" data-id="${g.id}">
+      <div class="atlas-acts atlas-acts-bg"><button data-act="editGoal" data-id="${g.id}">編輯</button>${st!=='冰箱'&&st!=='已完成'?`<button data-act="freezeGoal" data-id="${g.id}">放進冰箱</button>`:''}<button data-act="delGoal" data-id="${g.id}">刪除</button></div>
+      <div class="card atlas-card atlas-swipe-front">
+        <div class="beast-fill sm" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div>
+        <div class="info"><b>${esc(g.name)}</b><small>${money(g.saved)} / ${money(g.target)}</small>
+          <div class="track"><i style="width:${pct(g)}%"></i></div>
+        </div>
+        <span class="status-chip st-${st}">${st}</span>
       </div>
-      <span class="status-chip st-${st}">${st}</span>
     </div>`;}).join('')
     : `<div class="card" style="padding:30px;text-align:center;color:var(--muted);font-weight:700">這個分類還沒有本命</div>`;
   return `${appbar()}
@@ -1735,6 +1742,72 @@ document.addEventListener('click', e=>{
     case 'closeModal': S.modal=null; render(); break;
   }
 });
+/* 圖鑑卡片左滑顯示動作按鈕（觸控 + 滑鼠都支援，桌面預覽點一下也能切換） */
+(function(){
+  let dragEl=null, frontEl=null, baseX=0, startX=0, startY=0, curX=0, isDrag=false, openX=-140;
+  function closeAllSwipes(except){
+    document.querySelectorAll('.atlas-swipe.open').forEach(el=>{
+      if(el===except) return;
+      el.classList.remove('open');
+      const f=el.querySelector('.atlas-swipe-front'); if(f) f.style.transform='';
+    });
+  }
+  function beginDrag(el,x,y){
+    dragEl=el; frontEl=el.querySelector('.atlas-swipe-front');
+    const bg=el.querySelector('.atlas-acts-bg');
+    openX = bg ? -Math.min(Math.max(bg.scrollWidth+18,90),220) : -140;
+    baseX = el.classList.contains('open') ? openX : 0;
+    startX=x; startY=y; curX=baseX; isDrag=false;
+    if(frontEl) frontEl.style.transition='none';
+  }
+  function moveDrag(x,y){
+    if(!dragEl) return;
+    const dx=x-startX, dy=y-startY;
+    if(!isDrag){
+      if(Math.abs(dx)<8 && Math.abs(dy)<8) return;
+      if(Math.abs(dy)>Math.abs(dx)){ dragEl=null; return; } // 判定為垂直捲動，放棄手勢
+      isDrag=true;
+    }
+    curX=Math.max(openX, Math.min(0, baseX+dx));
+    if(frontEl) frontEl.style.transform=`translateX(${curX}px)`;
+  }
+  function endDrag(){
+    if(!dragEl) return;
+    if(frontEl) frontEl.style.transition='';
+    if(isDrag){
+      if(curX<openX/2){ closeAllSwipes(dragEl); dragEl.classList.add('open'); if(frontEl) frontEl.style.transform=`translateX(${openX}px)`; }
+      else { dragEl.classList.remove('open'); if(frontEl) frontEl.style.transform=''; }
+    } else {
+      // 沒有明顯拖曳位移：當成點一下，切換開關（桌面預覽備援）
+      const willOpen=!dragEl.classList.contains('open');
+      closeAllSwipes(dragEl);
+      dragEl.classList.toggle('open', willOpen);
+      if(frontEl) frontEl.style.transform = willOpen ? `translateX(${openX}px)` : '';
+    }
+    dragEl=null; frontEl=null; isDrag=false;
+  }
+  document.addEventListener('touchstart', e=>{
+    const el=e.target.closest('.atlas-swipe'); if(!el) return;
+    if(e.target.closest('[data-act]')) return; // 讓按鈕自己的點擊正常運作
+    const t=e.touches[0]; beginDrag(el,t.clientX,t.clientY);
+  },{passive:true});
+  document.addEventListener('touchmove', e=>{
+    if(!dragEl) return; const t=e.touches[0]; moveDrag(t.clientX,t.clientY);
+  },{passive:true});
+  document.addEventListener('touchend', endDrag);
+  document.addEventListener('touchcancel', endDrag);
+  document.addEventListener('mousedown', e=>{
+    const el=e.target.closest('.atlas-swipe'); if(!el) return;
+    if(e.target.closest('[data-act]')) return;
+    beginDrag(el,e.clientX,e.clientY);
+    const mm=ev=>moveDrag(ev.clientX,ev.clientY);
+    const mu=()=>{ endDrag(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); };
+    document.addEventListener('mousemove',mm);
+    document.addEventListener('mouseup',mu);
+  });
+  // 點卡片以外的地方，收起所有已展開的滑動列
+  document.addEventListener('click', e=>{ if(!e.target.closest('.atlas-swipe')) closeAllSwipes(); });
+})();
 /* 檔案上傳需另外綁 change */
 document.addEventListener('change', e=>{
   if(e.target.id==='fFile'){ const f=e.target.files[0]; if(!f) return;
@@ -1864,7 +1937,9 @@ const _origFinish=createFinish;
 createFinish=function(){
   const m=S.modal;
   if(m.editId){ const g=S.goals.find(x=>x.id===m.editId); const d=m.draft;
-    if(g){ g.name=d.name.trim()||g.name; g.target=parseInt(d.target)||g.target; g.date=d.date||g.date; g.type=d.type; g.mascot=d.mascot; g.oath=d.oath; g.mode=d.mode; g.reminderOn=d.reminderOn!==false; g.imageData=d.imageData||g.imageData; g.imageUrl=d.imageUrl||g.imageUrl; }
+    if(g){ g.name=d.name.trim()||g.name; g.target=parseInt(d.target)||g.target; g.date=d.date||g.date; g.type=d.type; g.mascot=d.mascot; g.oath=d.oath; g.mode=d.mode; g.reminderOn=d.reminderOn!==false; g.imageData=d.imageData||g.imageData; g.imageUrl=d.imageUrl||g.imageUrl;
+      if(g.status==='冰箱') g.status='進行中'; // 冰箱中的目標編輯後自動解凍，回到進行中
+    }
     save(); S.modal=null; render(); toast('目標已更新'); return;
   }
   _origFinish();
