@@ -521,8 +521,6 @@ img{display:block;}
 .profile-card .info .role{font-size:13px;color:var(--muted);font-weight:800;}
 .profile-card .info b{display:block;font-size:24px;font-weight:800;margin:2px 0;}
 .profile-card .info small{font-size:13px;color:var(--muted);}
-.profile-card .lv{position:absolute;top:16px;right:16px;background:var(--accent-soft);color:var(--accent);
-  font-weight:900;font-size:13px;padding:8px 14px;border-radius:99px;}
 /* 修改⑪：精簡整合設定條 */
 .me-strip{margin-top:12px;padding:6px 18px;}
 .me-strip .row{display:flex;align-items:center;gap:14px;padding:14px 0;}
@@ -1334,7 +1332,6 @@ function tabMe(){
     <div class="card profile-card">
       <div class="big-av">${esc(S.name.slice(0,1))}</div>
       <div class="info"><b data-act="editName" style="cursor:pointer">${esc(S.name)} <span style="font-size:15px;color:var(--accent)">✎</span></b><small>已和存錢獸一起努力 ${days} 天</small></div>
-      <div class="lv">Lv. 1</div>
     </div>
 
     <div class="card me-section">
@@ -1587,7 +1584,7 @@ function modalCelebrate(){
     <div class="cel-sub">快把錢錢變成喜歡的樣子吧！</div>
     <div class="cel-acts">
       <button class="primary" data-act="share" data-id="${g.id}" data-variant="celebration">炫耀分享</button>
-      <button class="ghost" data-act="collectBeast" data-id="${g.id}">收進本命圖鑑</button>
+      <button class="ghost" data-act="collectBeast" data-id="${g.id}">看看本命圖鑑</button>
     </div>
   </div>`;
 }
@@ -1947,10 +1944,12 @@ function doDeposit(){
   const streakBefore=S.streak;
   const today=todayISO(); if(ls.get(K.lastDep,'')!==today){ S.streak++; ls.set(K.lastDep,today); }
   const justUnlockedStreak = streakBefore<30 && S.streak>=30 && !S.unlockedMascot;
-  save();
-  // 達陣：本次存款讓 saved 跨過 target；連續存錢 30 天：本次剛好跨過門檻且還沒解鎖過
-  // 兩件事有機會同一筆存款一起發生（罕見但要處理），用佇列依序顯示，不能漏掉任何一個
+  // 達陣：本次存款讓 saved 跨過 target，存滿當下就直接算完成，不用再多按一次「收進圖鑑」確認
   const justCompleted = was<g.target && g.saved>=g.target;
+  if(justCompleted) g.status='已完成';
+  save();
+  // 連續存錢 30 天：本次剛好跨過門檻且還沒解鎖過
+  // 達陣和連續 30 天有機會同一筆存款一起發生（罕見但要處理），用佇列依序顯示，不能漏掉任何一個
   const queue=[];
   if(justCompleted) queue.push({type:'celebrate', goalId:g.id});
   if(justUnlockedStreak) queue.push({type:'hiddenUnlock'});
@@ -1965,7 +1964,8 @@ function doDeposit(){
 }
 /* 關掉彈窗時，若佇列還有排隊中的彈窗（例如達陣慶祝之後還排著連續存錢解鎖），接著顯示；沒有才真的關掉 */
 function advanceModal(){ if(S.modalQueue && S.modalQueue.length){ S.modal=S.modalQueue.shift(); } else { S.modal=null; } }
-function collectBeast(id){ const g=S.goals.find(x=>x.id===id); if(g) g.status='已完成'; save(); advanceModal(); S.tab='gallery'; render(); toast('已收進本命圖鑑'); }
+// 存滿當下（doDeposit）已經自動判定完成，這裡只負責關掉慶祝畫面、帶去圖鑑看
+function collectBeast(id){ advanceModal(); S.tab='gallery'; render(); toast('已加入本命圖鑑！'); }
 /* 隱藏版存錢獸：三選一確認 */
 function confirmHiddenPick(){
   const m=S.modal; if(!m || m.chosen==null) return;
