@@ -457,7 +457,7 @@ img{display:block;}
 .unlock-card{background:linear-gradient(135deg,var(--accent-pale),var(--accent-soft));border-radius:var(--radius-lg);
   padding:20px;position:relative;overflow:hidden;border:1px solid var(--line);}
 .unlock-card .pill{background:rgba(140,113,223,.16);color:#8c71df;}
-.unlock-card h3{font-size:22px;font-weight:800;margin:12px 0;line-height:1.35;}
+.unlock-card h3{font-size:22px;font-weight:800;margin:12px 0;line-height:1.35;max-width:62%;}
 .unlock-card p{font-size:13px;color:var(--muted);font-weight:600;line-height:1.6;max-width:66%;}
 .unlock-card .emo{position:absolute;right:16px;top:76px;font-size:30px;letter-spacing:4px;}
 .unlock-card .unlock-beasts{display:flex;gap:2px;align-items:center;letter-spacing:0;top:64px;}
@@ -655,6 +655,7 @@ img{display:block;}
 .calc-card .r{display:flex;justify-content:space-between;align-items:center;padding:8px 0;}
 .calc-card .r small{font-size:14px;color:var(--muted);font-weight:700;} .calc-card .r b{font-size:22px;font-weight:900;}
 .ladder-note{font-size:13px;font-weight:700;color:var(--muted);line-height:1.6;margin-top:8px;background:rgba(255,255,255,.5);border-radius:12px;padding:10px 12px;}
+.date-overdue-hint{font-size:13px;font-weight:800;color:#a5402f;background:#f6d7d5;border-radius:12px;padding:10px 12px;margin:-6px 0 14px;}
 .ladder-sched{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);}
 .ladder-sched .lw{display:flex;flex-direction:column;gap:1px;background:rgba(255,255,255,.66);border-radius:12px;padding:7px 11px;min-width:62px;}
 .ladder-sched .lw i{font-style:normal;font-size:11px;font-weight:800;color:var(--muted);}
@@ -692,7 +693,7 @@ img{display:block;}
 .beast-fill.sm{width:72px;height:72px;}
 .beast-fill img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
 .beast-fill .base{filter:saturate(1.05) brightness(1.02);}
-.beast-fill .fill{clip-path:inset(calc(100% - var(--fp,0%)) 0 0 0);transition:clip-path .5s ease;filter:saturate(1.25) brightness(0.9);}
+.beast-fill .fill{clip-path:inset(calc(100% - var(--fp,0%)) 0 0 0);transition:clip-path .5s ease;filter:saturate(2.6) contrast(1.18);}
 .beast-fill .waterline{position:absolute;left:16%;right:16%;top:calc(100% - var(--fp,0%));height:3px;border-radius:3px;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);transition:top .5s ease;pointer-events:none;}
 .detail-ref{padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px;}
@@ -1287,7 +1288,7 @@ function tabGallery(){
     </div>` : `
     <div class="unlock-card">
       <span class="pill">隱藏版存錢獸</span>
-      <h3>${S.streak>=30 ? '隱藏版存錢獸已解鎖！' : '再連續存錢 30 天<br>解鎖 1 款隱藏版存錢獸'}</h3>
+      <h3>${S.streak>=30 ? '隱藏版存錢獸已解鎖！' : '解鎖隱藏版存錢獸'}</h3>
       <p>${S.streak>=30 ? '去新增本命的畫面，從三位隱藏夥伴中挑一款加入收藏吧！' : '連續存錢 30 天，就能從三位隱藏夥伴中解鎖一款。'}</p>
       <div class="emo unlock-beasts"><img src="${mascotSrc(16)}" alt=""><img src="${mascotSrc(17)}" alt=""><img src="${mascotSrc(18)}" alt=""></div>
       <div class="track"><i style="width:${Math.min(100,S.streak/30*100)}%"></i></div>
@@ -1443,6 +1444,7 @@ function modalCreate(){
     body=`<div class="field"><label>本命名稱</label><input class="inp" id="fName" placeholder="例如：日本來回機票" value="${esc(d.name)}"></div>
       <div class="field"><label>目標金額</label><div class="inp-money"><span>NT$</span><input id="fTarget" inputmode="numeric" placeholder="" value="${d.target||''}"></div></div>
       <div class="field"><label>達成日期</label><input class="inp" type="date" id="fDate" value="${d.date||''}"></div>
+      ${m.editId && d.date && d.date<todayISO() ? `<div class="date-overdue-hint">⏰ 這個日期已經過了，記得改成新的達成日期</div>` : ''}
       <div class="field"><label>本命圖片（選填）</label>
         <div class="upload"><div class="thumb">${d.imageData?`<img src="${d.imageData}">`:`<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`}</div>
           <div class="tx"><b>上傳本命照片</b></div>
