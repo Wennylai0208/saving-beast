@@ -992,6 +992,7 @@ function applyTheme(id){
 /* ============================================================
    渲染入口
    ============================================================ */
+let _prevTab=S.tab, _prevModalOpen=false;
 function render(){
   const r=$('#root');
   r.className='app-root theme-'+S.theme;
@@ -1002,6 +1003,14 @@ function render(){
   if(S.modal){
     const layer=document.createElement('div'); layer.id='modalLayer'; layer.innerHTML=viewModal(); r.appendChild(layer);
   }
+  // 換分頁或開/關彈窗（真的換到不同畫面時）才把捲動位置歸零，避免上一個畫面殘留的捲動位置
+  // 把新畫面的標題擋在螢幕外（例如在存款詳情往下滑，關掉後切到圖鑑，結果圖鑑標題被卡住看不到）；
+  // 但同一個彈窗內部換步驟（例如新增本命的 4 個步驟）不歸零，才不會打斷正在填表單的使用者
+  const modalOpen=!!S.modal;
+  if(S.tab!==_prevTab || modalOpen!==_prevModalOpen){ window.scrollTo(0,0); }
+  _prevTab=S.tab; _prevModalOpen=modalOpen;
+  // 清掉還沒消失的舊 toast，不然快速切換畫面時，上一個動作的提示訊息會殘留、疊在新畫面上造成混淆
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
 }
 
 /* ---------- 頂部 App bar ---------- */
@@ -1057,7 +1066,6 @@ function onbLanding(){
 
 /* 首次導覽 2：主題選擇 */
 function onbTheme(){
-  const cur=THEMES.find(t=>t.id===S.theme)||THEMES[0];
   return `<div class="screen no-nav">
     <div class="appbar" style="margin-bottom:24px">
       <div class="brand"><div class="logo"><img src="${mascotSrc(0)}"></div>
@@ -1065,12 +1073,8 @@ function onbTheme(){
       ${dots(1)}
     </div>
     <div class="eyebrow" style="display:flex;align-items:center;gap:10px"><span style="width:24px;height:2px;background:var(--accent);display:inline-block"></span>CHOOSE YOUR WORLD</div>
-    <h1 class="h1" style="margin:12px 0 18px">選擇主題</h1>
-    <div class="card theme-preview">
-      <div class="mark">${cur.mark}</div>
-      <div class="swatch ${cur.sw}"></div>
-      <div class="lbl"><small>目前主題</small><b>${cur.name}</b></div>
-    </div>
+    <h1 class="h1" style="margin:12px 0 6px">選擇主題</h1>
+    <p class="muted" style="font-size:13px;font-weight:700;margin-bottom:16px">選一款喜歡的配色，之後隨時可以在「我的」重新換</p>
     <div class="theme-grid">
       ${THEMES.map((t,i)=>`<div class="theme-card ${t.id===S.theme?'sel':''} ${i===4?'full':''}" data-act="pickTheme" data-id="${t.id}">
         <div class="tsw ${t.sw}"></div><div><b>${t.name}</b><small>${t.sub}</small></div>
@@ -1168,9 +1172,10 @@ function tabHome(){
         </div>`).join('')}`;
     }
   }
+  // 完全空狀態時，畫面裡已經有「開始」這顆主要按鈕了，右上角再放一顆同樣功能的 ＋ 對第一次來的學生是多餘的按鈕，先不顯示
   return `${appbar()}
     <div class="datehint">${dateZH()}</div>
-    <div class="home-title"><h1 class="h1">今天蹲了嗎？</h1><button class="fab" data-act="openCreate">＋</button></div>
+    <div class="home-title" style="${g?'':'padding-right:0'}"><h1 class="h1" style="${g?'':'padding-right:0'}">今天蹲了嗎？</h1>${g?`<button class="fab" data-act="openCreate">＋</button>`:''}</div>
     ${main}
     ${others}`;
 }
@@ -1291,6 +1296,7 @@ function tabGallery(){
       <div class="cnt">${Math.min(S.streak,30)} / 30 天</div>
     </div>`}
     <div class="filter-row">${filters.map(f=>`<button class="${S.galFilter===f?'on':''}" data-act="galFilter" data-id="${f}">${f}</button>`).join('')}</div>
+    ${list.length?`<p class="muted" style="font-size:12px;font-weight:700;margin:2px 0 10px">點卡片看詳情，左滑可編輯／放冰箱／刪除</p>`:''}
     ${cards}`;
 }
 
@@ -1413,7 +1419,8 @@ function modalCreate(){
       <div class="type-grid">${TYPES.map(t=>`<button class="type-card ${d.type===t.id?'sel':''}" style="--type-bg:${t.bg};--type-c:${t.c}" data-act="pickType" data-id="${t.id}">
         <div class="ic"><svg viewBox="0 0 24 24">${t.icon}</svg></div><b>${t.id}</b><small>${t.desc}</small></button>`).join('')}</div>`;
     // 下一步上移：緊接卡片下方，不用捲動
-    foot=`<div class="sheet-foot" style="margin-top:18px"><button class="ghost" data-act="closeModal">上一步</button><button class="primary" data-act="createNext">下一步</button></div>`;
+    // 這是第一步，左邊按鈕其實是「關掉整個新增流程」而不是回上一步，文字要對得上實際動作，不然學生會以為點了還在流程裡
+    foot=`<div class="sheet-foot" style="margin-top:18px"><button class="ghost" data-act="closeModal">取消</button><button class="primary" data-act="createNext">下一步</button></div>`;
   }
   else if(step===1){ // 挑存錢獸（修改⑤：橫幅只留隱藏版、下一步上移）
     const hiddenCell = S.unlockedMascot!=null ? `<button class="beast-cell ${d.mascot===S.unlockedMascot?'sel':''}" data-act="pickBeast" data-id="${S.unlockedMascot}">
@@ -1439,15 +1446,15 @@ function modalCreate(){
     body=`<div class="field"><label>本命名稱</label><input class="inp" id="fName" placeholder="例如：日本來回機票" value="${esc(d.name)}"></div>
       <div class="field"><label>目標金額</label><div class="inp-money"><span>NT$</span><input id="fTarget" inputmode="numeric" placeholder="" value="${d.target||''}"></div></div>
       <div class="field"><label>達成日期</label><input class="inp" type="date" id="fDate" value="${d.date||''}"></div>
-      <div class="field"><label>本命圖片</label>
+      <div class="field"><label>本命圖片（選填）</label>
         <div class="upload"><div class="thumb">${d.imageData?`<img src="${d.imageData}">`:`<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`}</div>
           <div class="tx"><b>上傳本命照片</b></div>
           <label class="pick">選擇<input type="file" accept="image/*" id="fFile" style="display:none"></label></div></div>
-      <div class="field"><label>本命圖片或連結（選填）</label>
+      <div class="field"><label>或貼圖片連結</label>
         <div class="inp-money"><span style="color:#8c71df;display:flex"><svg viewBox="0 0 24 24" style="width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></span><input id="fUrl" placeholder="https://..." value="${esc(d.imageUrl)}"></div></div>
-      <div class="field"><label>選一句宣誓語</label>
-        <div class="oath-row">${OATHS.map(o=>`<button class="${d.oath===o?'sel':''}" data-act="pickOath" data-oath="${esc(o)}">${o}</button>`).join('')}</div></div>
-      <div class="field"><label>或自己寫一句</label><input class="inp" id="fOath" value="${esc(d.oath)}"></div>
+      <div class="field"><label>選一句宣誓語，或自己寫一句</label>
+        <div class="oath-row">${OATHS.map(o=>`<button class="${d.oath===o?'sel':''}" data-act="pickOath" data-oath="${esc(o)}">${o}</button>`).join('')}</div>
+        <input class="inp" id="fOath" style="margin-top:10px" value="${esc(d.oath)}"></div>
       <div class="field"><label>每日存錢提醒</label>
         <div class="reminder-field"><div class="ic"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div>
           <div class="tx"><b>提醒我存這個目標</b><small>晚上 9:00 提醒記錄</small></div>
@@ -1548,7 +1555,7 @@ function modalDetail(){
     : `<div class="sheet-foot" style="grid-template-columns:1fr 1fr"><button class="primary" data-act="deposit" data-id="${g.id}">存錢</button><button class="ghost" data-act="share" data-id="${g.id}" data-variant="donate">求抖內</button></div>`;
   return sheetWrap(`
     <div class="sheet-head"><div><div class="eyebrow">${g.type}</div><h2>${esc(g.name)}</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
-    <div class="card detail-hero"><div class="tx"><small>要蹲的本命</small><b>${esc(g.name)}</b><div class="cap">${mascotName(g.mascot)}陪你存到夢想</div></div></div>
+    <div class="card detail-hero"><div class="tx"><b>${mascotName(g.mascot)}</b><div class="cap">陪你存到夢想</div></div></div>
     <div class="detail-prog">
       <div class="beast-fill" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div>
       <div class="r"><small>存款進度</small><div class="pct">${pct(g)}%</div><div class="bar"><i style="width:${pct(g)}%"></i></div></div></div>
@@ -1761,7 +1768,7 @@ document.addEventListener('click', e=>{
     case 'pickMode': S.modal.draft.mode=id; render(); break;
     case 'toggleDraftReminder': syncForm(); S.modal.draft.reminderOn=!S.modal.draft.reminderOn; render(); break;
     case 'createNext': createNext(); break;
-    case 'createPrev': syncForm(); S.modal.step--; render(); break;
+    case 'createPrev': syncForm(); S.modal.step--; window.scrollTo(0,0); render(); break;
     case 'createFinish': createFinish(); break;
     /* deposit */
     case 'deposit': S.modal={type:'deposit', goalId:id}; render(); break;
@@ -1905,7 +1912,7 @@ function createNext(){
     if(!parseInt(d.target)){ toast('填一下目標金額'); return; }
     if(!d.date){ toast('選一個達成日期'); return; }
   }
-  m.step++; render();
+  m.step++; window.scrollTo(0,0); render();
 }
 function createFinish(){
   const d=S.modal.draft;
@@ -1990,8 +1997,10 @@ function editGoal(id){ // 用建立流程 step3 編輯
   render();
 }
 function delGoal(id){ if(!confirm('確定刪除這個目標？')) return; S.goals=S.goals.filter(g=>g.id!==id); if(S.pinnedGoalId===id) S.pinnedGoalId=null; save(); render(); toast('已刪除'); }
-function freezeGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='冰箱'; if(S.pinnedGoalId===id) S.pinnedGoalId=null; save(); render(); toast('已放進冰箱，先暫停這個目標'); }
-function thawGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='進行中'; save(); render(); toast('已解凍，回到進行中'); }
+// 放冰箱／解凍後，如果目前的圖鑑篩選分類已經不包含這隻了，把篩選清空顯示全部，
+// 不然學生剛滑完動作，看到的會是「這個分類還沒有本命」的空畫面，搞不清楚剛剛的操作生效了沒有
+function freezeGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='冰箱'; if(S.pinnedGoalId===id) S.pinnedGoalId=null; if(S.galFilter && S.galFilter!==goalStatus(g)) S.galFilter=''; save(); render(); toast('已放進冰箱，先暫停這個目標'); }
+function thawGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='進行中'; if(S.galFilter && S.galFilter!==goalStatus(g)) S.galFilter=''; save(); render(); toast('已解凍，回到進行中'); }
 function openGoalDetail(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; S.modal={type:'detail', goalId:id}; render(); }
 function copyLink(){ const url=location.href.split('#')[0]+'#goal'; if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('專屬連結已複製'),()=>toast('連結：'+url)); else toast('連結：'+url); }
 function saveCard(id,variant){
