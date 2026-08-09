@@ -578,7 +578,7 @@ img{display:block;}
 .steps4{display:flex;gap:10px;margin:4px 0 18px;}
 .steps4 i{flex:1;height:8px;border-radius:99px;background:color-mix(in srgb,var(--ink) 10%,transparent);}
 .steps4 i.on{background:linear-gradient(90deg,var(--accent),#8c71df);}
-.sheet-foot{display:grid;grid-template-columns:1fr 1.3fr;gap:12px;margin-top:20px;}
+.sheet-foot{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px;}
 .sheet-foot .ghost{padding:18px;}
 .sheet-foot.single{grid-template-columns:1fr;}
 
@@ -1004,7 +1004,7 @@ function appbar(){
     </div>
     <div class="appbar-right">
       <div class="streak"><span class="hrt">♥</span> 連續存錢 <b>${S.streak}</b> 天</div>
-      <div class="me-avatar">${esc(S.name.slice(0,1))}</div>
+      <div class="me-avatar" data-act="tab" data-id="me" style="cursor:pointer">${esc(S.name.slice(0,1))}</div>
     </div>
   </div>`;
 }
@@ -1247,7 +1247,7 @@ function tabGallery(){
   let list=S.goals.slice().sort((a,b)=>goalTime(b)-goalTime(a));
   if(S.galFilter!=='全部') list=list.filter(g=>goalStatus(g)===S.galFilter);
   const cards = list.length ? list.map(g=>{ const st=goalStatus(g); return `<div class="atlas-swipe" data-id="${g.id}">
-      <div class="atlas-acts atlas-acts-bg"><button data-act="editGoal" data-id="${g.id}">編輯</button>${st!=='冰箱'&&st!=='已完成'?`<button data-act="freezeGoal" data-id="${g.id}">放進冰箱</button>`:''}<button data-act="delGoal" data-id="${g.id}">刪除</button></div>
+      <div class="atlas-acts atlas-acts-bg"><button data-act="editGoal" data-id="${g.id}">編輯</button>${st==='冰箱'?`<button data-act="thawGoal" data-id="${g.id}">解凍</button>`:st!=='已完成'?`<button data-act="freezeGoal" data-id="${g.id}">放進冰箱</button>`:''}<button data-act="delGoal" data-id="${g.id}">刪除</button></div>
       <div class="card atlas-card atlas-swipe-front">
         <div class="beast-fill sm" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div>
         <div class="info"><b>${esc(g.name)}</b><small>${money(g.saved)} / ${money(g.target)}</small>
@@ -1258,7 +1258,7 @@ function tabGallery(){
     </div>`;}).join('')
     : `<div class="card" style="padding:30px;text-align:center;color:var(--muted);font-weight:700">這個分類還沒有本命</div>`;
   return `${appbar()}
-    <div class="gal-head"><div><h1 class="h1">本命圖鑑</h1><p class="muted" style="font-size:14px;margin-top:6px;font-weight:700">所有夢想，一眼看清楚</p></div>
+    <div class="gal-head"><div><h1 class="h1">本命圖鑑</h1><p class="muted" style="font-size:14px;margin-top:6px;font-weight:700">看看每隻本命的進度</p></div>
       <div class="gal-rate"><b>${rate}%</b><small>整體達成率</small></div></div>
     <div class="card gal-stats">
       <div class="c"><b>${done}</b><small>已完成</small></div>
@@ -1322,11 +1322,6 @@ function tabMe(){
       <div class="lv">Lv. 1</div>
     </div>
 
-    <!-- 資料灰字（每日提醒已移到各目標的表單頁） -->
-    <div class="card me-strip">
-      <div class="datanote" style="border-top:none;padding-top:4px">每日存錢提醒可在各個目標的「編輯本命」頁分別設定。資料只存在你的裝置，分享時只會帶出你的本命目標，其他資料不會顯示。</div>
-    </div>
-
     <div class="card me-section">
       <div class="h2">主題版型 <span class="palette"><svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 2a10 10 0 1 0 0 20c1.7 0 2-1.5 1.2-2.4-.8-.9-.5-2.1.7-2.1H17a5 5 0 0 0 5-5c0-5-4.5-8.5-10-8.5z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></svg></span></div>
       <div class="theme-grid">
@@ -1337,7 +1332,6 @@ function tabMe(){
 
     <div class="widget-card">
       <div class="l"><span class="pill">桌面小工具</span><h3>不打開 App，<br>也看得到夢想長大</h3>
-        <small>存錢獸會維持原色，液面依進度水平上升。</small>
         <span class="set" data-act="widgetToast">${g?'設定 Widget →':'先建立目標 →'}</span></div>
       <div class="r">${g?`<small>${esc(g.name)}</small><img src="${mascotSrc(g.mascot)}"><b>${pct(g)}%</b>`:`<small>等待第一個夢想</small><img src="${mascotSrc(0)}" style="opacity:.5"><b style="color:var(--muted)">—</b>`}</div>
     </div>
@@ -1538,6 +1532,11 @@ function modalDeposit(){
 /* ---- 目標詳情 ---- */
 function modalDetail(){
   const g=S.goals.find(x=>x.id===S.modal.goalId); if(!g) return '';
+  const st=goalStatus(g);
+  const done=st==='已完成';
+  const foot=done
+    ? `<div class="sheet-foot single" style="margin-top:20px"><span class="status-chip st-已完成" style="display:block;text-align:center;padding:14px;font-size:15px">✓ 已完成，恭喜蹲到本命！</span></div>`
+    : `<div class="sheet-foot" style="grid-template-columns:1fr 1fr"><button class="primary" data-act="deposit" data-id="${g.id}">存錢</button><button class="ghost" data-act="share" data-id="${g.id}" data-variant="donate">求抖內</button></div>`;
   return sheetWrap(`
     <div class="sheet-head"><div><div class="eyebrow">${g.type}</div><h2>${esc(g.name)}</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
     <div class="card detail-hero"><div class="tx"><small>要蹲的本命</small><b>${esc(g.name)}</b><div class="cap">${mascotName(g.mascot)}陪你存到夢想</div></div></div>
@@ -1556,7 +1555,7 @@ function modalDetail(){
       <div class="b"><small>每日建議</small><b>${money(dailySuggest(g))}</b></div>
     </div>
     <div class="detail-oath">「${esc(g.oath)}」</div>
-    <div class="sheet-foot" style="grid-template-columns:1fr 1fr"><button class="primary" data-act="deposit" data-id="${g.id}">去存錢</button><button class="ghost" data-act="share" data-id="${g.id}" data-variant="donate">求抖內</button></div>`);
+    ${foot}`);
 }
 
 /* ---- 達陣慶祝（修改⑨）---- */
@@ -1777,6 +1776,7 @@ document.addEventListener('click', e=>{
     case 'galFilter': S.galFilter=id; render(); break;
     case 'editGoal': editGoal(id); break;
     case 'freezeGoal': freezeGoal(id); break;
+    case 'thawGoal': thawGoal(id); break;
     case 'delGoal': delGoal(id); break;
     /* ledger */
     case 'ledgerSeg': S.ledgerSeg=id; render(); break;
@@ -1833,12 +1833,14 @@ document.addEventListener('click', e=>{
     if(isDrag){
       if(curX<openX/2){ closeAllSwipes(dragEl); dragEl.classList.add('open'); if(frontEl) frontEl.style.transform=`translateX(${openX}px)`; }
       else { dragEl.classList.remove('open'); if(frontEl) frontEl.style.transform=''; }
-    } else {
-      // 沒有明顯拖曳位移：當成點一下，切換開關（桌面預覽備援）
-      const willOpen=!dragEl.classList.contains('open');
+    } else if(dragEl.classList.contains('open')){
+      // 已經展開動作列時，輕點卡片＝收起動作列（不開詳情）
       closeAllSwipes(dragEl);
-      dragEl.classList.toggle('open', willOpen);
-      if(frontEl) frontEl.style.transform = willOpen ? `translateX(${openX}px)` : '';
+    } else {
+      // 沒有明顯拖曳位移，且動作列未展開：當成一般點擊，開啟本命詳情
+      const gid=dragEl.dataset.id;
+      closeAllSwipes();
+      openGoalDetail(gid);
     }
     dragEl=null; frontEl=null; isDrag=false;
   }
@@ -1980,6 +1982,8 @@ function editGoal(id){ // 用建立流程 step3 編輯
 }
 function delGoal(id){ if(!confirm('確定刪除這個目標？')) return; S.goals=S.goals.filter(g=>g.id!==id); if(S.pinnedGoalId===id) S.pinnedGoalId=null; save(); render(); toast('已刪除'); }
 function freezeGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='冰箱'; if(S.pinnedGoalId===id) S.pinnedGoalId=null; save(); render(); toast('已放進冰箱，先暫停這個目標'); }
+function thawGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='進行中'; save(); render(); toast('已解凍，回到進行中'); }
+function openGoalDetail(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; S.modal={type:'detail', goalId:id}; render(); }
 function copyLink(){ const url=location.href.split('#')[0]+'#goal'; if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('專屬連結已複製'),()=>toast('連結：'+url)); else toast('連結：'+url); }
 function saveCard(id,variant){
   const g=S.goals.find(x=>x.id===id); if(!g) return;
