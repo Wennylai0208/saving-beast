@@ -139,6 +139,8 @@ img{display:block;}
   background-size:100% auto,100% auto,cover;
 }
 
+
+
 .screen{ padding:18px 20px 20px; padding-bottom:106px; min-height:100vh; }
 .screen.no-nav{ padding-bottom:20px; }
 
@@ -461,8 +463,7 @@ img{display:block;}
 .unlock-card p{font-size:13px;color:var(--muted);font-weight:600;line-height:1.6;max-width:66%;}
 .unlock-card .emo{position:absolute;right:16px;top:76px;font-size:30px;letter-spacing:4px;}
 .unlock-card .unlock-beasts{display:flex;gap:2px;align-items:center;letter-spacing:0;top:64px;}
-.unlock-card .unlock-beasts img{width:42px;height:42px;object-fit:contain;opacity:.7;filter:grayscale(.15) drop-shadow(0 4px 8px rgba(120,90,140,.25));}
-.unlock-card .unlock-beasts img:nth-child(2){width:52px;height:52px;opacity:.85;}
+.unlock-card .unlock-beasts img{width:44px;height:44px;object-fit:contain;opacity:.85;filter:grayscale(.15) drop-shadow(0 4px 8px rgba(120,90,140,.25));}
 .unlock-card .track{height:6px;border-radius:99px;background:rgba(255,255,255,.6);overflow:hidden;margin:12px 0 8px;}
 .unlock-card .track>i{display:block;height:100%;width:0;background:#8c71df;border-radius:99px;}
 .unlock-card .cnt{color:#8c71df;font-weight:900;font-size:15px;}
@@ -695,7 +696,7 @@ img{display:block;}
 .beast-fill .base{filter:saturate(1.05) brightness(1.02);}
 .beast-fill .fill{clip-path:inset(calc(100% - var(--fp,0%)) 0 0 0);transition:clip-path .5s ease;filter:saturate(1.5) contrast(1.08);}
 .beast-fill .waterline{position:absolute;left:16%;right:16%;top:calc(100% - var(--fp,0%));height:3px;border-radius:3px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95),transparent);transition:top .5s ease;pointer-events:none;}
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);mix-blend-mode:overlay;transition:top .5s ease;pointer-events:none;}
 .detail-ref{padding:16px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px;}
 .detail-ref small{font-size:13px;color:var(--muted);font-weight:800;}
 .detail-ref img{width:100%;max-height:200px;object-fit:contain;border-radius:14px;background:var(--surface-2);}
@@ -1288,7 +1289,7 @@ function tabGallery(){
     </div>` : `
     <div class="unlock-card">
       <span class="pill">隱藏版存錢獸</span>
-      <h3>${S.streak>=30 ? '隱藏版存錢獸已解鎖！' : '解鎖隱藏版存錢獸'}</h3>
+      <h3>${S.streak>=30 ? '隱藏版存錢獸已解鎖！' : '解鎖隱藏版'}</h3>
       <p>${S.streak>=30 ? '去新增本命的畫面，從三位隱藏夥伴中挑一款加入收藏吧！' : '連續存錢 30 天，就能從三位隱藏夥伴中解鎖一款。'}</p>
       <div class="emo unlock-beasts"><img src="${mascotSrc(16)}" alt=""><img src="${mascotSrc(17)}" alt=""><img src="${mascotSrc(18)}" alt=""></div>
       <div class="track"><i style="width:${Math.min(100,S.streak/30*100)}%"></i></div>
@@ -1443,7 +1444,7 @@ function modalCreate(){
   else if(step===2){ // 編輯目標（修改⑥）
     body=`<div class="field"><label>本命名稱</label><input class="inp" id="fName" placeholder="例如：日本來回機票" value="${esc(d.name)}"></div>
       <div class="field"><label>目標金額</label><div class="inp-money"><span>NT$</span><input id="fTarget" inputmode="numeric" placeholder="" value="${d.target||''}"></div></div>
-      <div class="field"><label>達成日期</label><input class="inp" type="date" id="fDate" value="${d.date||''}"></div>
+      <div class="field"><label>達成日期</label><input class="inp" type="date" id="fDate" min="${todayISO()}" value="${d.date||''}"></div>
       ${m.editId && d.date && d.date<todayISO() ? `<div class="date-overdue-hint">⏰ 這個日期已經過了，記得改成新的達成日期</div>` : ''}
       <div class="field"><label>本命圖片（選填）</label>
         <div class="upload"><div class="thumb">${d.imageData?`<img src="${d.imageData}">`:`<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`}</div>
@@ -1910,6 +1911,7 @@ function createNext(){
     if(!d.name.trim()){ toast('幫本命取個名字吧'); return; }
     if(!parseInt(d.target)){ toast('填一下目標金額'); return; }
     if(!d.date){ toast('選一個達成日期'); return; }
+    if(d.date<todayISO()){ toast('達成日期不能選過去的時間喔'); return; }
   }
   m.step++; window.scrollTo(0,0); render();
 }
