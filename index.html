@@ -649,10 +649,11 @@ img{display:block;}
 /* 表單 step3 */
 .field{margin-bottom:16px;}
 .field>label{display:block;font-size:15px;font-weight:800;margin-bottom:8px;}
-.inp{width:100%;padding:18px;border-radius:18px;background:var(--surface);border:1px solid var(--line);
+.inp{width:100%;height:58px;padding:0 18px;border-radius:18px;background:var(--surface);border:1px solid var(--line);
   font-size:16px;color:var(--ink);box-shadow:var(--shadow-soft);}
 .inp::placeholder{color:color-mix(in srgb,var(--muted) 80%,transparent);}
-.inp-money{display:flex;align-items:center;gap:8px;padding:14px 18px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-soft);}
+.inp[type="date"]{height:58px;}
+.inp-money{display:flex;align-items:center;gap:8px;height:58px;padding:0 18px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-soft);}
 .inp-money span{font-weight:800;color:var(--muted);} .inp-money input{border:none;background:none;flex:1;font-size:16px;font-weight:800;color:var(--ink);outline:none;}
 .upload{display:flex;align-items:center;gap:16px;padding:16px;border-radius:20px;border:2px dashed color-mix(in srgb,#8c71df 40%,transparent);background:var(--accent-pale);}
 .upload .thumb{width:76px;height:76px;border-radius:16px;background:var(--surface);display:flex;align-items:center;justify-content:center;overflow:hidden;flex:none;}
