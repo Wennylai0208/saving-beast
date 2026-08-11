@@ -746,6 +746,10 @@ img{display:block;}
 .detail-ref img{width:100%;max-height:200px;object-fit:contain;border-radius:14px;background:var(--surface-2);}
 .detail-ref a{font-size:14px;font-weight:700;color:var(--accent);word-break:break-all;}
 .detail-prog .r{flex:1;} .detail-prog .r small{font-size:14px;color:var(--muted);font-weight:700;} .detail-prog .r .pct{font-size:44px;font-weight:900;color:var(--accent);margin:2px 0 10px;}
+.prog-amts{display:flex;align-items:baseline;gap:5px;margin-top:10px;font-size:14px;}
+.prog-amts b{font-weight:900;color:var(--ink);}
+.prog-amts .sep{color:var(--muted);}
+.prog-amts .muted{color:var(--muted);font-weight:700;}
 .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
 .detail-grid .b{padding:16px 18px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow-soft);}
 .detail-grid .b small{font-size:13px;color:var(--muted);} .detail-grid .b b{display:block;font-size:19px;font-weight:800;margin-top:6px;}
@@ -1674,16 +1678,16 @@ function modalDetail(){
         <div class="beast-fill" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div>
         <small class="beast-name">${mascotName(g.mascot)}</small>
       </div>
-      <div class="r"><small>存款進度</small><div class="pct">${pct(g)}%</div><div class="bar"><i style="width:${pct(g)}%"></i></div></div></div>
+      <div class="r"><small>存款進度</small><div class="pct">${pct(g)}%</div><div class="bar"><i style="width:${pct(g)}%"></i></div>
+        <div class="prog-amts"><b>${money(g.saved)}</b><span class="sep">/</span><span class="muted">${money(g.target)}</span></div>
+      </div></div>
     ${(g.imageData||g.imageUrl)?`<div class="card detail-ref"><small>你放的本命參考</small>
       ${g.imageData?`<img src="${g.imageData}" alt="">`:''}
       ${g.imageUrl?`<a href="${esc(g.imageUrl)}" target="_blank" rel="noopener">${esc(g.imageUrl)}</a>`:''}</div>`:''}
     <div class="detail-grid">
-      <div class="b"><small>已存金額</small><b>${money(g.saved)}</b></div>
-      <div class="b"><small>目標金額</small><b>${money(g.target)}</b></div>
       <div class="b"><small>開始日期</small><b>${(g.start||'').replace(/-/g,'/')}</b></div>
       <div class="b"><small>到期日期</small><b>${(g.date||'').replace(/-/g,'/')}</b></div>
-      <div class="b"><small>剩餘金額</small><b>${money(Math.max(0,g.target-g.saved))}</b></div>
+      <div class="b"><small>尚缺金額</small><b>${money(Math.max(0,g.target-g.saved))}</b></div>
       <div class="b"><small>每日建議</small><b>${money(dailySuggest(g))}</b></div>
     </div>
     <div class="detail-oath">「${esc(g.oath)}」</div>
