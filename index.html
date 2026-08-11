@@ -432,12 +432,18 @@ img{display:block;}
 .src-card{padding:20px;margin-top:14px;}
 .src-card .lead{font-size:13px;color:var(--muted);font-weight:700;}
 .src-card .h2{margin:6px 0 14px;}
-.src-item{background:var(--accent-pale);border-radius:18px;padding:16px 18px;margin-bottom:12px;}
-.src-item b{font-size:15px;font-weight:800;}
-.src-item .pc{font-size:26px;font-weight:900;color:var(--accent);margin:6px 0 10px;}
-.src-item .track{height:6px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden;}
-.src-item .track>i{display:block;height:100%;background:var(--accent);border-radius:99px;}
-.src-item small{display:block;font-size:12px;color:var(--muted);margin-top:8px;}
+.src-pie-wrap{display:flex;align-items:center;gap:20px;}
+.src-donut{width:110px;height:110px;flex:none;}
+.src-donut .in{width:78px;height:78px;}
+.src-donut .in b{font-size:15px;}
+.src-legend{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0;}
+.src-leg-row{display:flex;align-items:center;gap:10px;}
+.src-leg-txt{flex:1;min-width:0;}
+.src-leg-txt b{display:block;font-size:14px;font-weight:800;}
+.src-leg-txt small{display:block;font-size:11px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.src-leg-val{text-align:right;flex:none;}
+.src-leg-val b{display:block;font-size:14px;font-weight:800;}
+.src-leg-val small{display:block;font-size:11px;color:var(--muted);margin-top:1px;}
 /* 記帳：分類明細 */
 .cat-list{display:flex;flex-direction:column;gap:14px;}
 .cat-row{display:flex;align-items:center;gap:10px;}
@@ -449,12 +455,21 @@ img{display:block;}
 .cat-row .cp{font-size:12px;font-weight:800;color:var(--muted);width:34px;text-align:right;flex:none;}
 .ledger-empty{font-size:14px;color:var(--muted);font-weight:700;line-height:1.6;padding:10px 0;}
 /* 記帳：支出紀錄列 */
-.exp-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);}
-.exp-row:first-of-type{border-top:none;}
+.exp-row{display:flex;align-items:center;gap:12px;padding:12px 0;}
+.exp-row.atlas-swipe-front{background:var(--surface);}
+.exp-day .exp-swipe .exp-row{border-top:1px solid var(--line);}
+.exp-day .exp-swipe:first-child .exp-row{border-top:none;}
 .exp-row .ei{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none;}
 .exp-row .et{flex:1;} .exp-row .et b{font-size:15px;font-weight:800;} .exp-row .et small{display:block;font-size:12px;color:var(--muted);margin-top:2px;}
 .exp-row .ev{font-size:16px;font-weight:900;color:var(--ink);}
-.exp-row .edel{width:28px;height:28px;border-radius:99px;background:var(--surface-2);color:var(--muted);font-size:13px;font-weight:900;flex:none;}
+.exp-day .exp-swipe{margin-bottom:0;}
+.exp-day{margin-bottom:18px;}
+.exp-day:last-child{margin-bottom:0;}
+.exp-day-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;}
+.exp-day-head b{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.3px;}
+.exp-day-head small{font-size:13px;font-weight:800;color:var(--ink);}
+.cat-row{cursor:pointer;}
+.ledger-more{width:100%;margin-top:8px;padding:14px;border-radius:16px;background:var(--surface-2);color:var(--accent);font-weight:800;font-size:14px;text-align:center;}
 /* 記帳：新增支出 modal 分類格 */
 .cat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
 .cat-pick{padding:14px 6px;border-radius:16px;background:var(--surface);border:2px solid var(--line);text-align:center;color:var(--ink);}
@@ -870,6 +885,7 @@ const S = {
   tab: 'home',
   galFilter: '',
   ledgerSeg: '月',
+  ledgerShowAll: false,
   modal: null,   // {type, ...}
   modalQueue: [], // 執行期用：同一次操作可能觸發多個彈窗（達陣＋連續存錢解鎖），依序排隊顯示，不持久化
 };
@@ -880,6 +896,7 @@ const S = {
 const $ = s=>document.querySelector(s);
 const money = n=>'NT$'+Math.round(n||0).toLocaleString('en-US');
 function todayISO(){const d=new Date();const p=x=>String(x).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
+function yesterdayISO(){const d=new Date();d.setDate(d.getDate()-1);const p=x=>String(x).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
 function dateZH(){const d=new Date();const w=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][d.getDay()];return `${d.getMonth()+1}月${d.getDate()}日${w}`;}
 function daysLeft(dateStr){ if(!dateStr) return 1; const end=new Date(dateStr+'T00:00:00'); const now=new Date(); const t=new Date(now.getFullYear(),now.getMonth(),now.getDate()); return Math.round((end-t)/86400000); }
 function dailySuggest(g){ const rem=Math.max(0,(g.target||0)-(g.saved||0)); const d=Math.max(1,daysLeft(g.date)); return Math.ceil(rem/d); }
@@ -1232,23 +1249,41 @@ function tabLedger(){
   const sum=totalSrc.今日省下+totalSrc.自己存+totalSrc.外來贊助;
   const p=k=> sum? Math.round(totalSrc[k]/sum*100):0;
   const srcMeta=[['今日省下','忍住沒花的錢'],['自己存','從零用錢或收入主動存入'],['外來贊助','親友給你的應援']];
+  const SRC_COLORS={今日省下:'#ff2e88',自己存:'#8c71df',外來贊助:'#f5a623'};
+  let srcAcc=0, srcStops=[];
+  srcMeta.forEach(([k])=>{ const v=totalSrc[k]||0; if(v<=0) return; const from=sum?srcAcc/sum*100:0; srcAcc+=v; const to=sum?srcAcc/sum*100:0; srcStops.push(`${SRC_COLORS[k]} ${from}% ${to}%`); });
+  const srcDonutBg = sum>0 ? `conic-gradient(${srcStops.join(',')})` : `conic-gradient(color-mix(in srgb,var(--ink) 8%,transparent) 0 100%)`;
   // 分類明細列
   const catRows=CATS.filter(c=>(byCat[c.id]||0)>0).map(c=>{
     const v=byCat[c.id]; const pc=total?Math.round(v/total*100):0;
-    return `<div class="cat-row"><span class="dotc" style="background:${c.c}"></span>
+    return `<div class="cat-row" data-act="catDetail" data-id="${c.id}"><span class="dotc" style="background:${c.c}"></span>
       <span class="cn">${c.icon} ${c.label}</span><span class="cbar"><i style="width:${pc}%;background:${c.c}"></i></span>
       <span class="cv">${money(v)}</span><span class="cp">${pc}%</span></div>`;
   }).join('') || `<div class="ledger-empty">這個期間還沒有支出紀錄，按右上角 ＋ 記一筆吧！</div>`;
-  // 最近幾筆
-  const recent=list.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).slice(0,5).map(x=>{
-    const c=catMeta(x.category);
-    const w=x.worth?worthMeta(x.worth):null;
-    const title=esc(x.name||c.label);
-    return `<div class="exp-row"><span class="ei" style="background:${c.c}22;color:${c.c}">${c.icon}</span>
-      <div class="et"><b>${title}</b><small>${(x.date||'').replace(/-/g,'/')}${w&&w.id!=='need'?' · 可省':''}</small></div>
-      <span class="ev">-${money(x.amount)}</span>
-      <button class="edel" data-act="delExpense" data-id="${x.id}">✕</button></div>`;
-  }).join('');
+  // 最近幾筆（依日期分組，預設顯示最近 3 天，超過可「查看更多」）
+  const sortedExp=list.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.id||'').localeCompare(a.id||''));
+  const expGroups={}; const dateOrder=[];
+  sortedExp.forEach(x=>{ const d=x.date||''; if(!expGroups[d]){expGroups[d]=[]; dateOrder.push(d);} expGroups[d].push(x); });
+  const todayS=todayISO(), yestS=yesterdayISO();
+  const dayLabel=d=> d===todayS?'今天':(d===yestS?'昨天':d.replace(/-/g,'/'));
+  const DAYS_DEFAULT=3;
+  const showDates = S.ledgerShowAll ? dateOrder : dateOrder.slice(0,DAYS_DEFAULT);
+  const recent = dateOrder.length ? showDates.map(d=>{
+    const rows=expGroups[d].map(x=>{
+      const c=catMeta(x.category);
+      const w=x.worth?worthMeta(x.worth):null;
+      const title=esc(x.name||c.label);
+      return `<div class="atlas-swipe exp-swipe" data-id="${x.id}" data-kind="exp">
+        <div class="atlas-acts atlas-acts-bg"><button data-act="editExpense" data-id="${x.id}">編輯</button><button data-act="delExpense" data-id="${x.id}">刪除</button></div>
+        <div class="exp-row atlas-swipe-front"><span class="ei" style="background:${c.c}22;color:${c.c}">${c.icon}</span>
+          <div class="et"><b>${title}</b><small>${c.label}${w&&w.id!=='need'?' · 可省':''}</small></div>
+          <span class="ev">-${money(x.amount)}</span>
+        </div>
+      </div>`;
+    }).join('');
+    const dayTotal=expGroups[d].reduce((a,x)=>a+(x.amount||0),0);
+    return `<div class="exp-day"><div class="exp-day-head"><b>${dayLabel(d)}</b><small>${money(dayTotal)}</small></div>${rows}</div>`;
+  }).join('') + (dateOrder.length>DAYS_DEFAULT && !S.ledgerShowAll ? `<button class="ledger-more" data-act="ledgerShowMore">查看更多（還有 ${dateOrder.length-DAYS_DEFAULT} 天）</button>` : '') : '';
   return `${appbar()}
     <div class="eyebrow" style="color:var(--muted);letter-spacing:0;font-size:14px">把錢的去向看懂</div>
     <div class="home-title"><h1 class="h1">記帳分析</h1><button class="fab" data-act="ledgerAdd">＋</button></div>
@@ -1270,8 +1305,14 @@ function tabLedger(){
     <div class="card src-card">
       <div class="lead">分開看，才知道哪種方法最適合你</div>
       <h2 class="h2">本命金來源</h2>
-      ${srcMeta.map(([k,d])=>`<div class="src-item"><b>${k}</b><div class="pc">${p(k)}%</div>
-        <div class="track"><i style="width:${p(k)}%"></i></div><small>${d}</small></div>`).join('')}
+      <div class="src-pie-wrap">
+        <div class="donut src-donut" style="background:${srcDonutBg}"><div class="in"><b>${money(sum)}</b><small>總來源</small></div></div>
+        <div class="src-legend">
+          ${srcMeta.map(([k,d])=>`<div class="src-leg-row"><span class="dotc" style="background:${SRC_COLORS[k]}"></span>
+            <div class="src-leg-txt"><b>${k}</b><small>${d}</small></div>
+            <div class="src-leg-val"><b>${money(totalSrc[k])}</b><small>${p(k)}%</small></div></div>`).join('')}
+        </div>
+      </div>
     </div>`;
 }
 
@@ -1287,7 +1328,7 @@ function tabGallery(){
   // 圖鑑：全部都在，依建立時間新到舊排列
   let list=S.goals.slice().sort((a,b)=>goalTime(b)-goalTime(a));
   if(S.galFilter) list=list.filter(g=>goalStatus(g)===S.galFilter);
-  const cards = list.length ? list.map(g=>{ const st=goalStatus(g); return `<div class="atlas-swipe" data-id="${g.id}">
+  const cards = list.length ? list.map(g=>{ const st=goalStatus(g); return `<div class="atlas-swipe" data-id="${g.id}" data-kind="goal">
       <div class="atlas-acts atlas-acts-bg"><button data-act="editGoal" data-id="${g.id}">編輯</button>${st==='冰箱'?`<button data-act="thawGoal" data-id="${g.id}">解凍</button>`:st!=='已完成'?`<button data-act="freezeGoal" data-id="${g.id}">放進冰箱</button>`:''}<button data-act="delGoal" data-id="${g.id}">刪除</button></div>
       <div class="card atlas-card atlas-swipe-front">
         <div class="beast-fill sm" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div>
@@ -1396,6 +1437,7 @@ function viewModal(){
   if(m.type==='celebrate') return modalCelebrate();
   if(m.type==='share')   return modalShare();
   if(m.type==='ledgerAdd') return modalLedgerAdd();
+  if(m.type==='catDetail') return modalCatDetail();
   if(m.type==='hiddenUnlock') return modalHiddenUnlock();
   if(m.type==='hiddenPick') return modalHiddenPick();
   return '';
@@ -1410,7 +1452,7 @@ function modalLedgerAdd(){
   const worth=m.worth||'hesitate';
   const pay=m.pay||'cash';
   return sheetWrap(`
-    <div class="sheet-head"><div><div class="eyebrow">讓錢的去向變清楚</div><h2>記一筆支出</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
+    <div class="sheet-head"><div><div class="eyebrow">讓錢的去向變清楚</div><h2>${m.editId?'編輯支出':'記一筆支出'}</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
     <label style="display:block;font-size:15px;font-weight:800;margin-bottom:8px">支出名目（選填）</label>
     <input class="inp" id="expName" placeholder="例如：珍珠奶茶" value="${esc(name)}" style="margin-bottom:16px">
     <label style="display:block;font-size:15px;font-weight:800;margin-bottom:8px">金額</label>
@@ -1424,7 +1466,21 @@ function modalLedgerAdd(){
     <div class="pay-row">${PAYS.map(p=>`<button class="pay-pick ${pay===p.id?'sel':''}" data-act="pickPay" data-id="${p.id}"><b>${p.label}</b></button>`).join('')}</div>
     <label style="display:block;font-size:15px;font-weight:800;margin:16px 0 8px">日期</label>
     <div class="inp-date"><input type="date" id="expDate" value="${date}"></div>
-    <button class="primary" style="margin-top:18px" data-act="doAddExpense">記一筆</button>`);
+    <button class="primary" style="margin-top:18px" data-act="doAddExpense">${m.editId?'儲存':'記一筆'}</button>`);
+}
+/* ---- 分類明細 modal（點消費分布某一列，看這個期間該分類的每一筆） ---- */
+function modalCatDetail(){
+  const m=S.modal; const c=catMeta(m.catId);
+  const list=expensesInPeriod(S.ledgerSeg).filter(x=>x.category===m.catId).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const total=list.reduce((a,x)=>a+(x.amount||0),0);
+  const segLabel={'週':'本週','月':'本月','年':'今年'}[S.ledgerSeg]||'本月';
+  const rows=list.length?list.map(x=>`<div class="exp-row"><span class="ei" style="background:${c.c}22;color:${c.c}">${c.icon}</span>
+    <div class="et"><b>${esc(x.name||c.label)}</b><small>${(x.date||'').replace(/-/g,'/')}</small></div>
+    <span class="ev">-${money(x.amount)}</span></div>`).join(''):`<div class="ledger-empty">這段期間這個分類還沒有支出</div>`;
+  return sheetWrap(`
+    <div class="sheet-head"><div><div class="eyebrow">${segLabel}·${c.label}</div><h2>${c.icon} ${c.label}</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
+    <div style="margin-bottom:16px"><b style="font-size:24px;font-weight:900">${money(total)}</b><span style="color:var(--muted);font-size:13px;margin-left:8px">共 ${list.length} 筆</span></div>
+    ${rows}`);
 }
 function sheetWrap(inner){ return `<div class="overlay"><div class="backdrop" data-act="closeModal"></div><div class="sheet">${inner}</div></div>`; }
 
@@ -1822,7 +1878,8 @@ document.addEventListener('click', e=>{
     case 'thawGoal': thawGoal(id); break;
     case 'delGoal': delGoal(id); break;
     /* ledger */
-    case 'ledgerSeg': S.ledgerSeg=id; render(); break;
+    case 'ledgerSeg': S.ledgerSeg=id; S.ledgerShowAll=false; render(); break;
+    case 'ledgerShowMore': S.ledgerShowAll=true; render(); break;
     case 'ledgerAdd': S.modal={type:'ledgerAdd', category:'餐飲', amount:null, date:todayISO(), name:'', worth:'hesitate', pay:'cash'}; render(); break;
     case 'pickCat': syncExpForm(); S.modal.category=id; render(); break;
     case 'pickWorth': syncExpForm(); S.modal.worth=id; render(); break;
@@ -1830,6 +1887,8 @@ document.addEventListener('click', e=>{
     case 'expQuick': { const inp=$('#expAmt'); inp.value=(parseInt(inp.value)||0)+parseInt(t.dataset.v); S.modal.amount=parseInt(inp.value); break; }
     case 'doAddExpense': doAddExpense(); break;
     case 'delExpense': delExpense(id); break;
+    case 'editExpense': editExpense(id); break;
+    case 'catDetail': S.modal={type:'catDetail', catId:id}; render(); break;
     case 'saveSavable': { const g=activeGoal(); if(!g){ toast('先建立一個目標才能存喔'); break; } S.modal={type:'deposit', goalId:g.id, amount:parseInt(t.dataset.v)||0, source:'今日省下'}; render(); break; }
     /* me */
     case 'toggleReminder': S.reminderOn=!S.reminderOn; save(); render(); toast(S.reminderOn?'每日存錢提醒已開啟':'每日存錢提醒已關閉'); break;
@@ -1879,6 +1938,9 @@ document.addEventListener('click', e=>{
     } else if(dragEl.classList.contains('open')){
       // 已經展開動作列時，輕點卡片＝收起動作列（不開詳情）
       closeAllSwipes(dragEl);
+    } else if(dragEl.dataset.kind==='exp'){
+      // 支出列：沒有明顯拖曳位移，動作列未展開時，輕點不做任何事（要編輯/刪除請左滑）
+      closeAllSwipes();
     } else {
       // 沒有明顯拖曳位移，且動作列未展開：當成一般點擊，開啟本命詳情
       const gid=dragEl.dataset.id;
@@ -2017,10 +2079,22 @@ function doAddExpense(){
   const cat=S.modal.category||'其他';
   const worth=S.modal.worth||'hesitate';
   const pay=S.modal.pay||'cash';
-  S.expenses.push({ id:'exp-'+Date.now(), amount:amt, category:cat, date:date, name:name, worth:worth, pay:pay });
-  save(); S.modal=null; render(); toast('已記一筆支出');
+  const editId=S.modal.editId;
+  if(editId){
+    const x=S.expenses.find(e=>e.id===editId);
+    if(x){ x.amount=amt; x.category=cat; x.date=date; x.name=name; x.worth=worth; x.pay=pay; }
+    save(); S.modal=null; render(); toast('已更新這筆支出');
+  } else {
+    S.expenses.push({ id:'exp-'+Date.now(), amount:amt, category:cat, date:date, name:name, worth:worth, pay:pay });
+    save(); S.modal=null; render(); toast('已記一筆支出');
+  }
 }
 function delExpense(id){ S.expenses=S.expenses.filter(x=>x.id!==id); save(); render(); toast('已刪除這筆支出'); }
+function editExpense(id){
+  const x=S.expenses.find(e=>e.id===id); if(!x) return;
+  S.modal={type:'ledgerAdd', editId:id, category:x.category||'餐飲', amount:x.amount, date:x.date||todayISO(), name:x.name||'', worth:x.worth||'hesitate', pay:x.pay||'cash'};
+  render();
+}
 function editGoal(id){ // 用建立流程 step3 編輯
   const g=S.goals.find(x=>x.id===id); if(!g) return;
   S.modal={type:'create', step:2, editId:id, draft:{type:g.type,mascot:g.mascot,name:g.name,target:String(g.target),date:g.date,imageData:g.imageData||null,imageUrl:g.imageUrl||'',oath:g.oath,mode:g.mode,reminderOn:g.reminderOn!==false}};
