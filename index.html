@@ -397,8 +397,10 @@ img{display:block;}
 .empty-trio .d{width:98px;height:98px;transform:translateX(-16px);z-index:1;}
 /* 目標大卡 */
 .goal-swipe{position:relative;touch-action:pan-y;}
+.goal-swipe.swiping{overflow:hidden;border-radius:var(--radius-lg);}
 .goal-swipe .goal-card{transition:transform .28s cubic-bezier(.2,.8,.25,1),opacity .28s;will-change:transform;}
 .goal-swipe.dragging .goal-card{transition:none;}
+.goal-swipe .goal-card.incoming{position:absolute;top:0;left:0;width:100%;}
 .goal-dots{display:flex;justify-content:center;gap:6px;margin-top:12px;}
 .goal-dots i{width:6px;height:6px;border-radius:99px;background:color-mix(in srgb,var(--ink) 18%,transparent);flex:none;}
 .goal-dots i.on{width:18px;background:var(--accent);}
@@ -1215,6 +1217,29 @@ function tabbar(){
 }
 
 /* ---------- 首頁 ---------- */
+/* 首頁主視覺卡片內容（抽成函式，滑動動畫時要動態生一張「即將滑入」的卡片，跟 tabHome() 共用同一份內容） */
+function goalCardInner(g,isPinned){
+  return `<div class="top">
+        <div class="heart">${themeMark()}</div>
+        <span class="pill">${g.type}</span>
+        <div style="width:38px"></div>
+      </div>
+      <div class="goal-mascot"><div class="beast-fill lg" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div></div>
+      <div class="duetxt">${isPinned?'存錢目標':'最早到期'}・剩 ${Math.max(0,daysLeft(g.date))} 天</div>
+      <div class="name"><span class="mk">${themeMark()}</span><b>${esc(g.name)}</b></div>
+      <div class="oath">「${esc(g.oath)}」</div>
+      <div class="stat-row">
+        <div class="s l"><small>已存金額</small><b>${money(g.saved)}</b></div>
+        <div class="s"><small>達成率</small><b class="pct">${pct(g)}%</b></div>
+        <div class="s r"><small>目標金額</small><b>${money(g.target)}</b></div>
+      </div>
+      <div class="bar"><i style="width:${pct(g)}%"></i></div>
+      <div class="suggest"><div class="l"><span class="d"></span>今日目標</div><b>${money(dailySuggest(g))}</b></div>
+      <div class="btn-2">
+        <button class="primary" data-act="deposit" data-id="${g.id}">去存錢</button>
+        <button class="ghost" data-act="detail" data-id="${g.id}">看詳細</button>
+      </div>`;
+}
 function tabHome(){
   const g=homeGoal();
   let main;
@@ -1236,28 +1261,7 @@ function tabHome(){
     const nb=goalNeighbors(g.id);
     const dots=nb.total>1 ? `<div class="goal-dots">${Array.from({length:nb.total},(_,i)=>`<i class="${i===nb.index?'on':''}"></i>`).join('')}</div>` : '';
     main=`<div class="goal-swipe" data-id="${g.id}">
-      <div class="card goal-card">
-      <div class="top">
-        <div class="heart">${themeMark()}</div>
-        <span class="pill">${g.type}</span>
-        <div style="width:38px"></div>
-      </div>
-      <div class="goal-mascot"><div class="beast-fill lg" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div></div>
-      <div class="duetxt">${isPinned?'存錢目標':'最早到期'}・剩 ${Math.max(0,daysLeft(g.date))} 天</div>
-      <div class="name"><span class="mk">${themeMark()}</span><b>${esc(g.name)}</b></div>
-      <div class="oath">「${esc(g.oath)}」</div>
-      <div class="stat-row">
-        <div class="s l"><small>已存金額</small><b>${money(g.saved)}</b></div>
-        <div class="s"><small>達成率</small><b class="pct">${pct(g)}%</b></div>
-        <div class="s r"><small>目標金額</small><b>${money(g.target)}</b></div>
-      </div>
-      <div class="bar"><i style="width:${pct(g)}%"></i></div>
-      <div class="suggest"><div class="l"><span class="d"></span>今日目標</div><b>${money(dailySuggest(g))}</b></div>
-      <div class="btn-2">
-        <button class="primary" data-act="deposit" data-id="${g.id}">去存錢</button>
-        <button class="ghost" data-act="detail" data-id="${g.id}">看詳細</button>
-      </div>
-      </div>
+      <div class="card goal-card">${goalCardInner(g,isPinned)}</div>
       ${dots}
     </div>`;
   }
@@ -2065,10 +2069,33 @@ document.addEventListener('click', e=>{
   // 點卡片以外的地方，收起所有已展開的滑動列
   document.addEventListener('click', e=>{ if(!e.target.closest('.atlas-swipe')) closeAllSwipes(); });
 })();
-/* 首頁主視覺卡片左右滑動切換其他進行中的存錢獸 */
+/* 首頁主視覺卡片左右滑動切換其他進行中的存錢獸：放開手指後，讓舊卡片繼續滑出、新卡片同時從另一側滑入，
+   接續同一個動作，避免放開後整頁瞬間重繪造成的跳接感。動畫跑完才真正切換資料＋render()。 */
+function animateGoalSwap(swipeEl, outCard, target, dir){
+  const width=swipeEl.getBoundingClientRect().width||390;
+  swipeEl.classList.add('swiping');
+  const inCard=document.createElement('div');
+  inCard.className='card goal-card incoming';
+  // 滑入的這張卡片馬上就會變成 S.pinnedGoalId，所以顯示文字要跟 render() 之後一致，直接視為 isPinned=true
+  inCard.innerHTML=goalCardInner(target,true);
+  inCard.style.transform=`translateX(${dir==='left'?width:-width}px)`;
+  swipeEl.appendChild(inCard);
+  inCard.getBoundingClientRect(); // 強制 reflow，確保初始 transform 先套用，才能在下一幀觸發過渡
+  requestAnimationFrame(()=>{
+    inCard.style.transition='transform .3s cubic-bezier(.2,.8,.25,1)';
+    outCard.style.transition='transform .3s cubic-bezier(.2,.8,.25,1),opacity .3s';
+    inCard.style.transform='translateX(0)';
+    outCard.style.transform=`translateX(${dir==='left'?-width:width}px)`;
+    outCard.style.opacity='0';
+  });
+  setTimeout(()=>{
+    S.pinnedGoalId=target.id; save(); render();
+  },320);
+}
 (function(){
-  let dragEl=null, cardEl=null, startX=0, startY=0, curX=0, isDrag=false, width=0;
+  let dragEl=null, cardEl=null, startX=0, startY=0, curX=0, isDrag=false, width=0, animating=false;
   function begin(el,x,y){
+    if(animating) return;
     dragEl=el; cardEl=el.querySelector('.goal-card'); width=el.getBoundingClientRect().width||390;
     startX=x; startY=y; curX=0; isDrag=false;
   }
@@ -2095,7 +2122,9 @@ document.addEventListener('click', e=>{
       if(curX<-threshold && nb.next) target=nb.next;
       else if(curX>threshold && nb.prev) target=nb.prev;
       if(target){
-        S.pinnedGoalId=target.id; save(); render();
+        animating=true;
+        animateGoalSwap(dragEl, cardEl, target, curX<0?'left':'right');
+        setTimeout(()=>{ animating=false; },320);
       } else if(cardEl){
         cardEl.style.transform=''; cardEl.style.opacity='';
       }
@@ -2115,6 +2144,7 @@ document.addEventListener('click', e=>{
   document.addEventListener('touchend', end);
   document.addEventListener('touchcancel', end);
   document.addEventListener('mousedown', e=>{
+    if(animating) return;
     const el=e.target.closest('.goal-swipe'); if(!el) return;
     if(e.target.closest('[data-act]')) return;
     begin(el,e.clientX,e.clientY);
