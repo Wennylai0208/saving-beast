@@ -519,11 +519,25 @@ img{display:block;}
 .atlas-card .info{flex:1;min-width:0;}
 .atlas-card .info b{font-size:18px;font-weight:800;}
 .atlas-card .info small{display:block;font-size:13px;color:var(--muted);margin:4px 0 8px;}
+.atlas-card .info .due{color:var(--muted);font-size:11px;font-weight:700;margin-top:2px;}
 .atlas-card .track{height:8px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden;}
 .atlas-card .track>i{display:block;height:100%;background:var(--accent);border-radius:99px;}
 .home-pick{cursor:pointer;transition:transform .15s,border-color .15s;border:2px solid transparent;}
 .home-pick:active{transform:scale(.98);}
 .home-pick:hover{border-color:var(--accent-soft);}
+.squad-strip{display:flex;gap:12px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;}
+.squad-strip::-webkit-scrollbar{display:none;}
+.squad-card{flex:none;width:150px;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;background:var(--surface);border-radius:var(--radius-md);border:2px solid transparent;box-shadow:var(--shadow-soft);cursor:pointer;transition:transform .15s,border-color .15s;text-align:center;}
+.squad-card:active{transform:scale(.97);}
+.squad-card:hover{border-color:var(--accent-soft);}
+.squad-card .info{width:100%;}
+.squad-card .info b{display:block;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.squad-card .info small{display:block;font-size:11px;color:var(--muted);margin:2px 0 6px;}
+.squad-card .track{height:6px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden;}
+.squad-card .track>i{display:block;height:100%;background:var(--accent);border-radius:99px;}
+.squad-more{justify-content:center;background:var(--accent-pale);}
+.squad-more-ic{width:36px;height:36px;border-radius:99px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;}
+.squad-more b{font-size:13px;color:var(--accent);}
 .status-chip{flex:none;padding:9px 14px;border-radius:99px;font-size:13px;font-weight:800;}
 .st-進行中{background:#fbe9b8;color:#8a6a10;}
 .st-已完成{background:#c8ebd2;color:#1f7a42;}
@@ -1218,23 +1232,26 @@ function tabHome(){
       </div>
     </div>`;
   }
-  // 兩隻以上時，首頁列出其他本命，點一下就能換到最上面顯示
+  // 兩隻以上時，首頁列出其他本命，橫向滑動卡片，點一下就能換到最上面顯示；後面加「看本命圖鑑」連結
   let others='';
   if(g){
     // 首頁只列「進行中」的其他本命（已完成／未完成／冰箱都不出現），最早到期排前面
     const rest=S.goals.filter(x=>x.id!==g.id && goalStatus(x)==='進行中')
                       .sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-    if(rest.length){
-      others=`<div class="eyebrow" style="display:block;margin:24px 0 4px">MY SQUAD</div>
-        <h2 class="h2" style="margin-bottom:12px">你的其他存錢獸</h2>
-        ${rest.map(o=>`<div class="card atlas-card home-pick" data-act="pinGoal" data-id="${o.id}">
+    others=`<div class="eyebrow" style="display:block;margin:24px 0 4px">MY SQUAD</div>
+      <h2 class="h2" style="margin-bottom:12px">你的其他存錢獸</h2>
+      <div class="squad-strip">
+        ${rest.map(o=>`<div class="squad-card home-pick" data-act="pinGoal" data-id="${o.id}">
           <div class="beast-fill sm" style="--fp:${pct(o)}%"><img class="base" src="${mascotSrc(o.mascot)}" alt=""><img class="fill" src="${mascotSrc(o.mascot)}" alt=""><div class="waterline"></div></div>
           <div class="info"><b>${esc(o.name)}</b><small>${money(o.saved)} / ${money(o.target)}</small>
             <div class="track"><i style="width:${pct(o)}%"></i></div>
           </div>
-          <span class="status-chip st-${goalStatus(o)}">${goalStatus(o)}</span>
-        </div>`).join('')}`;
-    }
+        </div>`).join('')}
+        <div class="squad-card squad-more" data-act="tab" data-id="gallery">
+          <div class="squad-more-ic">→</div>
+          <b>看本命圖鑑</b>
+        </div>
+      </div>`;
   }
   // 完全空狀態時，畫面裡已經有「開始」這顆主要按鈕了，右上角再放一顆同樣功能的 ＋ 對第一次來的學生是多餘的按鈕，先不顯示
   return `${appbar()}
@@ -1345,8 +1362,8 @@ function tabGallery(){
   // 整體達成率：每個目標各自封頂 100%（pct 已封頂），再取平均，才不會超過 100%
   const rate=S.goals.length?Math.round(S.goals.reduce((a,g)=>a+pct(g),0)/S.goals.length):0;
   const filters=['進行中','已完成','冰箱','未完成'];
-  // 圖鑑：全部都在，依建立時間新到舊排列
-  let list=S.goals.slice().sort((a,b)=>goalTime(b)-goalTime(a));
+  // 圖鑑：預設依到期日由近到遠排列，沒有日期的排最後
+  let list=S.goals.slice().sort((a,b)=>(a.date||'9999-99-99').localeCompare(b.date||'9999-99-99'));
   if(S.galFilter) list=list.filter(g=>goalStatus(g)===S.galFilter);
   const cards = list.length ? list.map(g=>{ const st=goalStatus(g); return `<div class="atlas-swipe" data-id="${g.id}" data-kind="goal">
       <div class="atlas-acts atlas-acts-bg"><button data-act="editGoal" data-id="${g.id}">編輯</button>${st==='冰箱'?`<button data-act="thawGoal" data-id="${g.id}">解凍</button>`:st!=='已完成'?`<button data-act="freezeGoal" data-id="${g.id}">放進冰箱</button>`:''}<button data-act="delGoal" data-id="${g.id}">刪除</button></div>
@@ -1354,13 +1371,14 @@ function tabGallery(){
         <div class="beast-fill sm" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div>
         <div class="info"><b>${esc(g.name)}</b><small>${money(g.saved)} / ${money(g.target)}</small>
           <div class="track"><i style="width:${pct(g)}%"></i></div>
+          ${st==='進行中'?`<small class="due">剩 ${Math.max(0,daysLeft(g.date))} 天・${(g.date||'').replace(/-/g,'/')}</small>`:''}
         </div>
         <span class="status-chip st-${st}">${st}</span>
       </div>
     </div>`;}).join('')
     : `<div class="card" style="padding:30px;text-align:center;color:var(--muted);font-weight:700">這個分類還沒有本命</div>`;
   return `${appbar()}
-    <div class="gal-head"><div><h1 class="h1">本命圖鑑</h1><p class="muted" style="font-size:14px;margin-top:6px;font-weight:700">看看每隻本命的進度</p></div>
+    <div class="gal-head"><div><h1 class="h1">本命圖鑑</h1><p class="muted" style="font-size:14px;margin-top:6px;font-weight:700">看看每隻存錢獸的進度</p></div>
       <div class="gal-rate"><b>${rate}%</b><small>整體達成率</small></div></div>
     <div class="card gal-stats">
       <div class="c"><b>${done}</b><small>已完成</small></div>
@@ -2070,7 +2088,7 @@ function createFinish(){
     oath:d.oath||OATHS[0], mode:d.mode, imageData:d.imageData||'', imageUrl:d.imageUrl||'',
     reminderOn:d.reminderOn!==false,
     sources:{今日省下:0,自己存:0,外來贊助:0} };
-  S.goals.push(g); save(); S.modal=null; S.tab='home'; render();
+  S.goals.push(g); S.pinnedGoalId=g.id; save(); S.modal=null; S.tab='home'; render();
   toast('新目標已入住首頁與圖鑑');
 }
 function doDeposit(){
