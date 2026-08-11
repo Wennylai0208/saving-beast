@@ -1790,9 +1790,16 @@ function drawShareCard(g, variant, cb){
   const muted='#5f4652';         // 加深的說明字（原本 muted 太淡）
   // 若主題主色偏淺，改用穩定的深粉，確保白底可讀
   if(accent==='#2b91ff') accent='#1f6fd6';
-  // 背景
+  // 背景：維持白底可讀性，但邊角加主題色小點綴，讓卡片有跟著主題走的感覺
   const grad=ctx.createLinearGradient(0,0,0,H); grad.addColorStop(0,'#ffffff'); grad.addColorStop(1, rootStyle.getPropertyValue('--accent-pale').trim()||'#f3edff');
   ctx.fillStyle=grad; roundRect(ctx,0,0,W,H,48); ctx.fill();
+  ctx.save(); roundRect(ctx,0,0,W,H,48); ctx.clip();
+  const accent2=rootStyle.getPropertyValue('--accent2').trim()||accent;
+  [[54,58,'dot',accent,0,.9],[W-58,52,'tri',accent2,20,.8],[W-42,132,'dot',accent2,0,.7],
+   [50,142,'drop',accent,-15,.85],[42,H-88,'line',accent,10,.8],[W-56,H-84,'dot',accent2,0,.9],
+   [W-38,H-142,'tri',accent,200,.7]
+  ].forEach(([x,y,shape,col,rot,sc])=>drawConfShape(ctx,x,y,shape,col,rot,sc));
+  ctx.restore();
   const isCel=variant==='celebration';
   ctx.textAlign='center';
   // kicker
