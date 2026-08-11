@@ -161,6 +161,14 @@ img{display:block;}
   background-position:top center,top center,top center,0 0;
   background-size:100% auto,100% auto,100% auto,cover;
 }
+/* 街頭噴漆背景圖案較花，直接躺在背景上的標題文字（不在卡片內）加白色光暈確保可讀 */
+.app-root.theme-streetpop .h1,
+.app-root.theme-streetpop .h2,
+.app-root.theme-streetpop .gal-head p,
+.app-root.theme-streetpop .eyebrow,
+.app-root.theme-streetpop .datehint{
+  text-shadow:0 1px 3px #fff, 0 2px 10px rgba(255,255,255,.9), 0 0 16px rgba(255,255,255,.7);
+}
 /* 復古電玩 */
 .app-root.theme-arcade{
   background-image:
@@ -1235,7 +1243,7 @@ function tabHome(){
         <div style="width:38px"></div>
       </div>
       <div class="goal-mascot"><div class="beast-fill lg" style="--fp:${pct(g)}%"><img class="base" src="${mascotSrc(g.mascot)}" alt=""><img class="fill" src="${mascotSrc(g.mascot)}" alt=""><div class="waterline"></div></div></div>
-      <div class="duetxt">${isPinned?'你選的本命':'最早到期'}・剩 ${Math.max(0,daysLeft(g.date))} 天</div>
+      <div class="duetxt">${isPinned?'存錢目標':'最早到期'}・剩 ${Math.max(0,daysLeft(g.date))} 天</div>
       <div class="name"><span class="mk">${themeMark()}</span><b>${esc(g.name)}</b></div>
       <div class="oath">「${esc(g.oath)}」</div>
       <div class="stat-row">
