@@ -429,6 +429,7 @@ img{display:block;}
 .ledger-note .warn{display:inline-block;background:#fbe9b8;color:#8a6a10;font-size:13px;font-weight:800;padding:8px 14px;border-radius:99px;}
 .ledger-note h3{font-size:22px;font-weight:800;margin:12px 0;line-height:1.3;}
 .ledger-note .save-link{color:var(--accent);font-weight:800;font-size:15px;}
+.ledger-note .ledger-hint{font-size:12px;color:var(--muted);font-weight:600;margin:0 0 10px;}
 .src-card{padding:20px;margin-top:14px;}
 .src-card .lead{font-size:13px;color:var(--muted);font-weight:700;}
 .src-card .h2{margin:6px 0 14px;}
@@ -596,10 +597,10 @@ img{display:block;}
 .restart-card .arr{color:var(--muted);font-size:20px;}
 
 /* ================= Modal 通用 ================= */
-.overlay{position:fixed;inset:0;z-index:100;display:flex;justify-content:center;align-items:flex-end;}
+.overlay{position:fixed;inset:0;height:100dvh;z-index:100;display:flex;justify-content:center;align-items:flex-end;}
 .overlay .backdrop{position:absolute;inset:0;background:rgba(60,40,50,.42);backdrop-filter:blur(4px);}
 .sheet{
-  position:relative;width:390px;max-width:100%;max-height:92vh;overflow-y:auto;
+  position:relative;width:390px;max-width:100%;max-height:92dvh;overflow-y:auto;
   background:var(--bg);border-radius:30px 30px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));
   box-shadow:0 -20px 60px rgba(0,0,0,.3);
   animation:sheetUp .32s cubic-bezier(.2,.8,.25,1);
@@ -930,6 +931,8 @@ const WORTHS=[
   {id:'unnecessary',label:'大可不必',       emoji:'🤡'},
 ];
 function worthMeta(id){ return WORTHS.find(w=>w.id===id)||null; }
+/* 這筆是不是「本來可以省」：有填值不值得就照 need 判斷，沒填就退回看分類（娛樂/購物算可省） */
+function isSavable(x){ return x.worth ? x.worth!=='need' : (x.category==='娛樂'||x.category==='購物'); }
 /* 付款方式 */
 const PAYS=[{id:'cash',label:'現金'},{id:'card',label:'刷卡'}];
 /* 依週/月/年篩選支出（週＝最近7天、月＝本月、年＝今年） */
@@ -937,6 +940,7 @@ function expensesInPeriod(seg){
   const now=new Date();
   return S.expenses.filter(x=>{
     const d=new Date((x.date||'')+'T00:00:00'); if(isNaN(d)) return false;
+    if(seg==='日') return x.date===todayISO();
     if(seg==='年') return d.getFullYear()===now.getFullYear();
     if(seg==='月') return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
     const diff=(now-d)/86400000; return diff>=-1 && diff<7; // 週：最近7天
@@ -1285,15 +1289,15 @@ function tabLedger(){
     return `<div class="exp-day"><div class="exp-day-head"><b>${dayLabel(d)}</b><small>${money(dayTotal)}</small></div>${rows}</div>`;
   }).join('') + (dateOrder.length>DAYS_DEFAULT && !S.ledgerShowAll ? `<button class="ledger-more" data-act="ledgerShowMore">查看更多（還有 ${dateOrder.length-DAYS_DEFAULT} 天）</button>` : '') : '';
   return `${appbar()}
-    <div class="eyebrow" style="color:var(--muted);letter-spacing:0;font-size:14px">把錢的去向看懂</div>
+    <div class="eyebrow" style="color:var(--muted);letter-spacing:0;font-size:14px">把錢的去向看清楚</div>
     <div class="home-title"><h1 class="h1">記帳分析</h1><button class="fab" data-act="ledgerAdd">＋</button></div>
     <div class="seg">${['週','月','年'].map(s=>`<button class="${seg===s?'on':''}" data-act="ledgerSeg" data-id="${s}">${s}</button>`).join('')}</div>
     <div class="card donut-card">
       <div class="donut" style="background:${donutBg}"><div class="in"><b>${money(total)}</b><small>${segLabel}支出</small></div></div>
       <div class="ledger-note">
         <span class="warn">可再想一下 ${money(savable)}</span>
-        <h3>${savable>0?`${savePct}% 的花費可能變成夢想進度`:'記帳看看錢錢去哪了，可以幫你更快蹲到本命喔～'}</h3>
-        ${savable>0?`<span class="save-link" data-act="saveSavable" data-v="${savable}">把可省金額存起來 →</span>`:`<span class="save-link muted">快開始記帳吧！</span>`}
+        <h3>${savable>0?`${savePct}% 的花費可能變成本命金`:'記帳看看錢錢去哪了，可以幫你更快蹲到本命喔～'}</h3>
+        ${savable>0?`<p class="ledger-hint">下次消費前可以再想想喔～</p><span class="save-link" data-act="openSavable">看詳細 →</span>`:`<span class="save-link muted">快開始記帳吧！</span>`}
       </div>
     </div>
     <div class="card src-card">
@@ -1303,7 +1307,7 @@ function tabLedger(){
     </div>
     ${recent?`<div class="card src-card"><div class="lead">最近的支出</div><h2 class="h2">支出紀錄</h2>${recent}</div>`:''}
     <div class="card src-card">
-      <div class="lead">分開看，才知道哪種方法最適合你</div>
+      <div class="lead">看看你是怎麼讓錢錢留下來的</div>
       <h2 class="h2">本命金來源</h2>
       <div class="src-pie-wrap">
         <div class="donut src-donut" style="background:${srcDonutBg}"><div class="in"><b>${money(sum)}</b><small>總來源</small></div></div>
@@ -1438,6 +1442,7 @@ function viewModal(){
   if(m.type==='share')   return modalShare();
   if(m.type==='ledgerAdd') return modalLedgerAdd();
   if(m.type==='catDetail') return modalCatDetail();
+  if(m.type==='savableDetail') return modalSavableDetail();
   if(m.type==='hiddenUnlock') return modalHiddenUnlock();
   if(m.type==='hiddenPick') return modalHiddenPick();
   return '';
@@ -1480,6 +1485,22 @@ function modalCatDetail(){
   return sheetWrap(`
     <div class="sheet-head"><div><div class="eyebrow">${segLabel}·${c.label}</div><h2>${c.icon} ${c.label}</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
     <div style="margin-bottom:16px"><b style="font-size:24px;font-weight:900">${money(total)}</b><span style="color:var(--muted);font-size:13px;margin-left:8px">共 ${list.length} 筆</span></div>
+    ${rows}`);
+}
+/* ---- 可再想一下明細 modal（記帳頁「看詳細」，依日/週/月/年查可省花費） ---- */
+function modalSavableDetail(){
+  const m=S.modal; const seg=m.seg||S.ledgerSeg;
+  const list=expensesInPeriod(seg).filter(isSavable).sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const total=list.reduce((a,x)=>a+(x.amount||0),0);
+  const segLabel={'日':'今天','週':'本週','月':'本月','年':'今年'}[seg]||'本月';
+  const rows=list.length?list.map(x=>{ const c=catMeta(x.category); return `<div class="exp-row"><span class="ei" style="background:${c.c}22;color:${c.c}">${c.icon}</span>
+    <div class="et"><b>${esc(x.name||c.label)}</b><small>${c.label} · ${(x.date||'').replace(/-/g,'/')}</small></div>
+    <span class="ev">-${money(x.amount)}</span></div>`;
+  }).join(''):`<div class="ledger-empty">這段期間沒有可再想想的花費</div>`;
+  return sheetWrap(`
+    <div class="sheet-head"><div><div class="eyebrow">${segLabel}·可再想一下的花費</div><h2>看詳細</h2></div><button class="xbtn" data-act="closeModal">✕</button></div><hr class="dash">
+    <div class="seg">${['日','週','月','年'].map(s=>`<button class="${seg===s?'on':''}" data-act="savableSeg" data-id="${s}">${s}</button>`).join('')}</div>
+    <div style="margin:16px 0"><b style="font-size:24px;font-weight:900">${money(total)}</b><span style="color:var(--muted);font-size:13px;margin-left:8px">共 ${list.length} 筆</span></div>
     ${rows}`);
 }
 function sheetWrap(inner){ return `<div class="overlay"><div class="backdrop" data-act="closeModal"></div><div class="sheet">${inner}</div></div>`; }
@@ -1889,7 +1910,8 @@ document.addEventListener('click', e=>{
     case 'delExpense': delExpense(id); break;
     case 'editExpense': editExpense(id); break;
     case 'catDetail': S.modal={type:'catDetail', catId:id}; render(); break;
-    case 'saveSavable': { const g=activeGoal(); if(!g){ toast('先建立一個目標才能存喔'); break; } S.modal={type:'deposit', goalId:g.id, amount:parseInt(t.dataset.v)||0, source:'今日省下'}; render(); break; }
+    case 'openSavable': S.modal={type:'savableDetail', seg:S.ledgerSeg}; render(); break;
+    case 'savableSeg': if(S.modal) S.modal.seg=id; render(); break;
     /* me */
     case 'toggleReminder': S.reminderOn=!S.reminderOn; save(); render(); toast(S.reminderOn?'每日存錢提醒已開啟':'每日存錢提醒已關閉'); break;
     case 'editName': { const nm=prompt('輸入你的名字：', S.name==='你'?'':S.name); if(nm!=null){ const v=nm.trim(); S.name=v||'你'; ls.set(K.name,S.name); save(); render(); toast('名字已更新'); } break; }
