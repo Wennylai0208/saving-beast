@@ -442,7 +442,7 @@ img{display:block;}
 .cat-list{display:flex;flex-direction:column;gap:14px;}
 .cat-row{display:flex;align-items:center;gap:10px;}
 .cat-row .dotc{width:11px;height:11px;border-radius:99px;flex:none;}
-.cat-row .cn{font-size:14px;font-weight:800;width:74px;flex:none;}
+.cat-row .cn{font-size:14px;font-weight:800;width:88px;flex:none;white-space:nowrap;}
 .cat-row .cbar{flex:1;height:8px;border-radius:99px;background:color-mix(in srgb,var(--ink) 8%,transparent);overflow:hidden;}
 .cat-row .cbar>i{display:block;height:100%;border-radius:99px;}
 .cat-row .cv{font-size:13px;font-weight:800;width:66px;text-align:right;flex:none;}
@@ -1257,7 +1257,7 @@ function tabLedger(){
       <div class="donut" style="background:${donutBg}"><div class="in"><b>${money(total)}</b><small>${segLabel}支出</small></div></div>
       <div class="ledger-note">
         <span class="warn">可再想一下 ${money(savable)}</span>
-        <h3>${savable>0?`${savePct}% 的花費<br>可能變成夢想進度`:'記帳看看錢錢去哪了，<br>可以幫你更快蹲到本命喔～'}</h3>
+        <h3>${savable>0?`${savePct}% 的花費可能變成夢想進度`:'記帳看看錢錢去哪了，可以幫你更快蹲到本命喔～'}</h3>
         ${savable>0?`<span class="save-link" data-act="saveSavable" data-v="${savable}">把可省金額存起來 →</span>`:`<span class="save-link muted">快開始記帳吧！</span>`}
       </div>
     </div>
