@@ -1486,7 +1486,7 @@ function modalLedgerAdd(){
     <label style="display:block;font-size:15px;font-weight:800;margin:16px 0 10px">付款方式</label>
     <div class="pay-row">${PAYS.map(p=>`<button class="pay-pick ${pay===p.id?'sel':''}" data-act="pickPay" data-id="${p.id}"><b>${p.label}</b></button>`).join('')}</div>
     <label style="display:block;font-size:15px;font-weight:800;margin:16px 0 8px">日期</label>
-    <div class="inp-date"><input type="date" id="expDate" value="${date}"></div>
+    <div class="inp-date"><input type="date" id="expDate" max="${todayISO()}" value="${date}"></div>
     <button class="primary" style="margin-top:18px" data-act="doAddExpense">${m.editId?'儲存':'記一筆'}</button>`);
 }
 /* ---- 分類明細 modal（點消費分布某一列，看這個期間該分類的每一筆） ---- */
@@ -2122,6 +2122,7 @@ function doAddExpense(){
   const amt=parseInt(($('#expAmt')||{}).value)||0;
   if(amt<=0){ toast('輸入支出金額'); return; }
   const date=($('#expDate')||{}).value||todayISO();
+  if(date>todayISO()){ toast('支出日期不能選未來的時間喔'); return; }
   const name=(S.modal.name||'').trim();
   const cat=S.modal.category||'其他';
   const worth=S.modal.worth||'hesitate';
