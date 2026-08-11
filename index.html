@@ -388,6 +388,12 @@ img{display:block;}
 .empty-trio .p{width:134px;height:134px;z-index:2;}
 .empty-trio .d{width:98px;height:98px;transform:translateX(-16px);z-index:1;}
 /* 目標大卡 */
+.goal-swipe{position:relative;touch-action:pan-y;}
+.goal-swipe .goal-card{transition:transform .28s cubic-bezier(.2,.8,.25,1),opacity .28s;will-change:transform;}
+.goal-swipe.dragging .goal-card{transition:none;}
+.goal-dots{display:flex;justify-content:center;gap:6px;margin-top:12px;}
+.goal-dots i{width:6px;height:6px;border-radius:99px;background:color-mix(in srgb,var(--ink) 18%,transparent);flex:none;}
+.goal-dots i.on{width:18px;background:var(--accent);}
 .goal-card{padding:18px 18px 20px;position:relative;overflow:hidden;}
 .goal-card .top{display:flex;align-items:center;justify-content:space-between;}
 .goal-card .heart{width:38px;height:38px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);
@@ -1005,6 +1011,16 @@ function homeGoal(){ // 首頁最上面顯示的本命：使用者指定優先�
   }
   return activeGoal();
 }
+/* 首頁主視覺卡片左右滑動用：進行中目標依到期日排序，並找出前後鄰居 */
+function inProgressOrdered(){
+  return S.goals.filter(x=>goalStatus(x)==='進行中').sort((a,b)=>(a.date||'9999-99-99').localeCompare(b.date||'9999-99-99'));
+}
+function goalNeighbors(gid){
+  const ordered=inProgressOrdered();
+  const i=ordered.findIndex(x=>x.id===gid);
+  if(i<0) return {prev:null,next:null,index:-1,total:ordered.length};
+  return { prev: i>0?ordered[i-1]:null, next: i<ordered.length-1?ordered[i+1]:null, index:i, total:ordered.length };
+}
 function toast(msg){
   const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t);
   setTimeout(()=>t.remove(),1900);
@@ -1209,7 +1225,10 @@ function tabHome(){
   } else {
     const ty=TYPES.find(t=>t.id===g.type)||TYPES[0];
     const isPinned=S.pinnedGoalId===g.id;
-    main=`<div class="card goal-card">
+    const nb=goalNeighbors(g.id);
+    const dots=nb.total>1 ? `<div class="goal-dots">${Array.from({length:nb.total},(_,i)=>`<i class="${i===nb.index?'on':''}"></i>`).join('')}</div>` : '';
+    main=`<div class="goal-swipe" data-id="${g.id}">
+      <div class="card goal-card">
       <div class="top">
         <div class="heart">${themeMark()}</div>
         <span class="pill">${g.type}</span>
@@ -1230,6 +1249,8 @@ function tabHome(){
         <button class="primary" data-act="deposit" data-id="${g.id}">去存錢</button>
         <button class="ghost" data-act="detail" data-id="${g.id}">看詳細</button>
       </div>
+      </div>
+      ${dots}
     </div>`;
   }
   // 兩隻以上時，首頁列出其他本命，橫向滑動卡片，點一下就能換到最上面顯示；後面加「看本命圖鑑」連結
@@ -2035,6 +2056,65 @@ document.addEventListener('click', e=>{
   });
   // 點卡片以外的地方，收起所有已展開的滑動列
   document.addEventListener('click', e=>{ if(!e.target.closest('.atlas-swipe')) closeAllSwipes(); });
+})();
+/* 首頁主視覺卡片左右滑動切換其他進行中的存錢獸 */
+(function(){
+  let dragEl=null, cardEl=null, startX=0, startY=0, curX=0, isDrag=false, width=0;
+  function begin(el,x,y){
+    dragEl=el; cardEl=el.querySelector('.goal-card'); width=el.getBoundingClientRect().width||390;
+    startX=x; startY=y; curX=0; isDrag=false;
+  }
+  function move(x,y){
+    if(!dragEl) return;
+    const dx=x-startX, dy=y-startY;
+    if(!isDrag){
+      if(Math.abs(dx)<10 && Math.abs(dy)<10) return;
+      if(Math.abs(dy)>Math.abs(dx)){ dragEl=null; return; } // 垂直滑動：放棄，讓頁面正常捲動
+      isDrag=true; dragEl.classList.add('dragging');
+    }
+    curX=dx;
+    if(cardEl) cardEl.style.transform=`translateX(${curX}px)`;
+    if(cardEl) cardEl.style.opacity=String(Math.max(.4,1-Math.abs(curX)/width));
+  }
+  function end(){
+    if(!dragEl) return;
+    dragEl.classList.remove('dragging');
+    if(isDrag){
+      const gid=dragEl.dataset.id;
+      const nb=goalNeighbors(gid);
+      const threshold=width*0.22;
+      let target=null;
+      if(curX<-threshold && nb.next) target=nb.next;
+      else if(curX>threshold && nb.prev) target=nb.prev;
+      if(target){
+        S.pinnedGoalId=target.id; save(); render();
+      } else if(cardEl){
+        cardEl.style.transform=''; cardEl.style.opacity='';
+      }
+    } else if(cardEl){
+      cardEl.style.transform=''; cardEl.style.opacity='';
+    }
+    dragEl=null; cardEl=null; isDrag=false;
+  }
+  document.addEventListener('touchstart', e=>{
+    const el=e.target.closest('.goal-swipe'); if(!el) return;
+    if(e.target.closest('[data-act]')) return; // 讓卡片內按鈕(去存錢/看詳細)正常運作
+    const t=e.touches[0]; begin(el,t.clientX,t.clientY);
+  },{passive:true});
+  document.addEventListener('touchmove', e=>{
+    if(!dragEl) return; const t=e.touches[0]; move(t.clientX,t.clientY);
+  },{passive:true});
+  document.addEventListener('touchend', end);
+  document.addEventListener('touchcancel', end);
+  document.addEventListener('mousedown', e=>{
+    const el=e.target.closest('.goal-swipe'); if(!el) return;
+    if(e.target.closest('[data-act]')) return;
+    begin(el,e.clientX,e.clientY);
+    const mm=ev=>move(ev.clientX,ev.clientY);
+    const mu=()=>{ end(); document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); };
+    document.addEventListener('mousemove',mm);
+    document.addEventListener('mouseup',mu);
+  });
 })();
 /* 檔案上傳需另外綁 change */
 document.addEventListener('change', e=>{
