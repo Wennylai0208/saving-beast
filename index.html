@@ -1893,7 +1893,7 @@ document.addEventListener('click', e=>{
     case 'zoomBeast': e.stopPropagation(); S.modal.zoom=parseInt(id); render(); break;
     case 'closeZoom': S.modal.zoom=null; render(); break;
     case 'pickBeastZoom': S.modal.draft.mascot=parseInt(id); S.modal.zoom=null; render(); break;
-    case 'pickOath': S.modal.draft.oath=t.dataset.oath; render(); break;
+    case 'pickOath': syncForm(); S.modal.draft.oath=t.dataset.oath; render(); break;
     case 'pickMode': S.modal.draft.mode=id; render(); break;
     case 'toggleDraftReminder': syncForm(); S.modal.draft.reminderOn=!S.modal.draft.reminderOn; render(); break;
     case 'createNext': createNext(); break;
