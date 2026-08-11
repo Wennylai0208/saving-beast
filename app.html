@@ -896,6 +896,14 @@ const S = {
    ============================================================ */
 const $ = s=>document.querySelector(s);
 const money = n=>'NT$'+Math.round(n||0).toLocaleString('en-US');
+/* 金額字太長時（例如6位數以上）自動縮字級，避免撐破甜甜圈這類固定圓形空間 */
+function fitFontPx(n, base){
+  const len=money(n).length;
+  if(len<=6) return base;
+  if(len<=8) return Math.round(base*0.85);
+  if(len<=10) return Math.round(base*0.7);
+  return Math.round(base*0.58);
+}
 function todayISO(){const d=new Date();const p=x=>String(x).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
 function yesterdayISO(){const d=new Date();d.setDate(d.getDate()-1);const p=x=>String(x).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
 function dateZH(){const d=new Date();const w=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][d.getDay()];return `${d.getMonth()+1}月${d.getDate()}日${w}`;}
@@ -1293,7 +1301,7 @@ function tabLedger(){
     <div class="home-title"><h1 class="h1">記帳分析</h1><button class="fab" data-act="ledgerAdd">＋</button></div>
     <div class="seg">${['週','月','年'].map(s=>`<button class="${seg===s?'on':''}" data-act="ledgerSeg" data-id="${s}">${s}</button>`).join('')}</div>
     <div class="card donut-card">
-      <div class="donut" style="background:${donutBg}"><div class="in"><b>${money(total)}</b><small>${segLabel}支出</small></div></div>
+      <div class="donut" style="background:${donutBg}"><div class="in"><b style="font-size:${fitFontPx(total,20)}px">${money(total)}</b><small>${segLabel}支出</small></div></div>
       <div class="ledger-note">
         <span class="warn">可再想一下 ${money(savable)}</span>
         <h3>${savable>0?`${savePct}% 的花費可能變成本命金`:'記帳看看錢錢去哪了，可以幫你更快蹲到本命喔～'}</h3>
@@ -1310,7 +1318,7 @@ function tabLedger(){
       <div class="lead">看看你是怎麼讓錢錢留下來的</div>
       <h2 class="h2">本命金來源</h2>
       <div class="src-pie-wrap">
-        <div class="donut src-donut" style="background:${srcDonutBg}"><div class="in"><b>${money(sum)}</b><small>總來源</small></div></div>
+        <div class="donut src-donut" style="background:${srcDonutBg}"><div class="in"><b style="font-size:${fitFontPx(sum,15)}px">${money(sum)}</b><small>總來源</small></div></div>
         <div class="src-legend">
           ${srcMeta.map(([k,d])=>`<div class="src-leg-row"><span class="dotc" style="background:${SRC_COLORS[k]}"></span>
             <div class="src-leg-txt"><b>${k}</b><small>${d}</small></div>
