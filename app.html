@@ -972,7 +972,7 @@ const CATS=[
 function catMeta(id){ return CATS.find(c=>c.id===id)||CATS[CATS.length-1]; }
 /* 這筆花得值不值得（need 以外都算「本來可以省」） */
 const WORTHS=[
-  {id:'need',       label:'必須的', emoji:'❤️‍🔥'},
+  {id:'need',       label:'必需的', emoji:'❤️‍🔥'},
   {id:'hesitate',   label:'衝動消費', emoji:''},
   {id:'tax',        label:'純粹智商稅',     emoji:''},
   {id:'unnecessary',label:'大可不必',       emoji:'🤡'},
@@ -2285,10 +2285,10 @@ function editGoal(id){ // 用建立流程 step3 編輯
   render();
 }
 function delGoal(id){ if(!confirm('確定刪除這個目標？')) return; S.goals=S.goals.filter(g=>g.id!==id); if(S.pinnedGoalId===id) S.pinnedGoalId=null; save(); render(); toast('已刪除'); }
-// 放冰箱／解凍後，如果目前的圖鑑篩選分類已經不包含這隻了，把篩選清空顯示全部，
-// 不然學生剛滑完動作，看到的會是「這個分類還沒有本命」的空畫面，搞不清楚剛剛的操作生效了沒有
-function freezeGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='冰箱'; if(S.pinnedGoalId===id) S.pinnedGoalId=null; if(S.galFilter && S.galFilter!==goalStatus(g)) S.galFilter=''; save(); render(); toast('已放進冰箱，先暫停這個目標'); }
-function thawGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='進行中'; if(S.galFilter && S.galFilter!==goalStatus(g)) S.galFilter=''; save(); render(); toast('已解凍，回到進行中'); }
+// 放冰箱／解凍後，該目標的狀態變了，就照目前篩選分類正常過濾——
+// 例如在「進行中」分類放冰箱，這隻就該從這個分類消失、跑去「冰箱」分類
+function freezeGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='冰箱'; if(S.pinnedGoalId===id) S.pinnedGoalId=null; save(); render(); toast('已放進冰箱，先暫停這個目標'); }
+function thawGoal(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; g.status='進行中'; save(); render(); toast('已解凍，回到進行中'); }
 function openGoalDetail(id){ const g=S.goals.find(x=>x.id===id); if(!g) return; S.modal={type:'detail', goalId:id}; render(); }
 function saveCard(id,variant){
   const g=S.goals.find(x=>x.id===id); if(!g) return;
