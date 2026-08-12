@@ -1335,7 +1335,7 @@ function tabLedger(){
     return `<div class="cat-row" data-act="catDetail" data-id="${c.id}"><span class="dotc" style="background:${c.c}"></span>
       <span class="cn">${c.icon} ${c.label}</span><span class="cbar"><i style="width:${pc}%;background:${c.c}"></i></span>
       <span class="cv">${money(v)}</span><span class="cp">${pc}%</span></div>`;
-  }).join('') || `<div class="ledger-empty">這個期間還沒有支出紀錄，按右上角 ＋ 記一筆吧！</div>`;
+  }).join('') || `<div class="ledger-empty">這個期間還沒有支出紀錄，按右上角 ＋ 新增一筆帳吧！</div>`;
   // 最近幾筆（依日期分組，預設顯示最近 3 天，超過可「查看更多」）
   const sortedExp=list.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.id||'').localeCompare(a.id||''));
   const expGroups={}; const dateOrder=[];
@@ -1368,8 +1368,8 @@ function tabLedger(){
       <div class="donut" style="background:${donutBg}"><div class="in"><b style="font-size:${fitFontPx(total,20)}px">${money(total)}</b><small>${segLabel}支出</small></div></div>
       <div class="ledger-note">
         <span class="warn">可再想一下 ${money(savable)}</span>
-        <h3>${savable>0?`${savePct}% 的花費可能變成本命金`:'記帳看看錢錢去哪了，可以幫你更快蹲到本命喔～'}</h3>
-        ${savable>0?`<p class="ledger-hint">下次消費前可以再想想喔～</p><span class="save-link" data-act="openSavable">看詳細 →</span>`:`<span class="save-link muted">快開始記帳吧！</span>`}
+        <h3>${savable>0?`${savePct}% 的花費可能變成本命金`:'記帳幫你找出可以省下的花費'}</h3>
+        ${savable>0?`<p class="ledger-hint">下次消費前可以再想想喔～</p><span class="save-link" data-act="openSavable">看詳細 →</span>`:`<span class="save-link" data-act="ledgerAdd">快開始記帳吧 →</span>`}
       </div>
     </div>
     <div class="card src-card">
