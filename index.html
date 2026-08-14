@@ -613,16 +613,6 @@ img{display:block;}
 .me-section .lead{font-size:13px;color:var(--muted);font-weight:700;}
 .me-section .h2{margin:4px 0 14px;display:flex;align-items:center;justify-content:space-between;}
 .me-section .h2 .palette{font-size:22px;color:var(--accent);}
-.widget-card{display:flex;gap:16px;padding:20px;margin-top:14px;background:linear-gradient(135deg,var(--accent-pale),var(--accent-soft));border:1px solid var(--line);}
-.widget-card .l{flex:1;}
-.widget-card .l .pill{background:rgba(140,113,223,.16);color:#8c71df;}
-.widget-card .l h3{font-size:19px;font-weight:800;margin:10px 0;line-height:1.3;}
-.widget-card .l small{font-size:12px;color:var(--muted);}
-.widget-card .l .set{display:block;color:#8c71df;font-weight:800;margin-top:14px;}
-.widget-card .r{width:104px;flex:none;background:var(--surface);border-radius:18px;padding:10px;text-align:center;display:flex;flex-direction:column;align-items:center;}
-.widget-card .r small{font-size:11px;color:var(--muted);}
-.widget-card .r img{width:74px;height:74px;object-fit:contain;margin:4px 0;}
-.widget-card .r b{font-size:18px;font-weight:900;color:var(--accent);}
 .restart-card{display:flex;align-items:center;gap:16px;padding:18px;margin-top:14px;}
 .restart-card .ic{width:52px;height:52px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;}
 .restart-card .tx{flex:1;} .restart-card .tx b{font-size:17px;font-weight:800;} .restart-card .tx small{display:block;font-size:12px;color:var(--muted);margin-top:4px;}
@@ -1131,7 +1121,7 @@ function appbar(){
       <div><b>蹲個本命</b><small>讓存錢獸陪你存到夢想</small></div>
     </div>
     <div class="appbar-right">
-      <div class="streak"><span class="hrt">♥</span> 連續存錢 <b>${S.streak}</b> 天</div>
+      <div class="streak"><span class="hrt">♥</span> 累計存錢天數 <b>${S.streak}</b> 天</div>
       <div class="me-avatar" data-act="tab" data-id="me" style="cursor:pointer">${esc(S.name.slice(0,1))}</div>
     </div>
   </div>`;
@@ -1435,7 +1425,7 @@ function tabGallery(){
     <div class="unlock-card">
       <span class="pill">隱藏版存錢獸</span>
       <h3>${S.streak>=30 ? '隱藏版存錢獸已解鎖！' : '解鎖隱藏版'}</h3>
-      <p>${S.streak>=30 ? '去新增本命的畫面，從三位隱藏夥伴中挑一款加入收藏吧！' : '連續存錢 30 天，就能從三位隱藏夥伴中解鎖一款。'}</p>
+      <p>${S.streak>=30 ? '去新增本命的畫面，從三位隱藏夥伴中挑一款加入收藏吧！' : '累計存錢天數滿 30 天，就能從三位隱藏夥伴中解鎖一款。'}</p>
       <div class="emo unlock-beasts"><img src="${mascotSrc(16)}" alt=""><img src="${mascotSrc(17)}" alt=""><img src="${mascotSrc(18)}" alt=""></div>
       <div class="track"><i style="width:${Math.min(100,S.streak/30*100)}%"></i></div>
       <div class="cnt">${Math.min(S.streak,30)} / 30 天</div>
@@ -1473,7 +1463,6 @@ function tabDonate(){
 /* ---------- 我的（修改⑪：精簡整合）---------- */
 function tabMe(){
   const days=S.streak;
-  const g=activeGoal();
   return `${appbar()}
     <div class="card profile-card">
       <div class="big-av">${esc(S.name.slice(0,1))}</div>
@@ -1488,17 +1477,33 @@ function tabMe(){
       </div>
     </div>
 
-    <div class="widget-card">
-      <div class="l"><span class="pill">桌面小工具</span><h3>不打開 App，<br>也看得到夢想長大</h3>
-        <span class="set" data-act="widgetToast">${g?'設定 Widget →':'先建立目標 →'}</span></div>
-      <div class="r">${g?`<small>${esc(g.name)}</small><img src="${mascotSrc(g.mascot)}"><b>${pct(g)}%</b>`:`<small>等待第一個夢想</small><img src="${mascotSrc(0)}" style="opacity:.5"><b style="color:var(--muted)">—</b>`}</div>
-    </div>
-
     <!-- 打掉重練（原「重新開始」，現在是真的全部清空）-->
     <div class="card restart-card" data-act="restart">
       <div class="ic">✦</div>
       <div class="tx"><b>打掉重練</b><small>全部清空，回到第一次遇見存錢獸<span style="white-space:nowrap">的畫面</span></small></div>
       <div class="arr">→</div>
+    </div>
+
+    <!-- 隱私權政策 / 聯絡客服 / 版本資訊 -->
+    <a class="card restart-card" href="https://saving-beast-privacy.pages.dev" target="_blank" rel="noopener">
+      <div class="ic">🔒</div>
+      <div class="tx"><b>隱私權政策</b><small>了解我們如何保護你的資料</small></div>
+      <div class="arr">→</div>
+    </a>
+    <a class="card restart-card" href="https://saving-beast-privacy.pages.dev/support" target="_blank" rel="noopener">
+      <div class="ic">💬</div>
+      <div class="tx"><b>支援與常見問題</b><small>使用上有疑問？先看這裡</small></div>
+      <div class="arr">→</div>
+    </a>
+    <a class="card restart-card" href="mailto:lailailand0208@gmail.com">
+      <div class="ic">✉</div>
+      <div class="tx"><b>聯絡客服</b><small>有問題或建議都歡迎寫信給我們</small></div>
+      <div class="arr">→</div>
+    </a>
+    <div class="card restart-card">
+      <div class="ic">ℹ</div>
+      <div class="tx"><b>版本資訊</b><small>蹲個本命</small></div>
+      <div class="arr">1.0</div>
     </div>`;
 }
 
@@ -1607,7 +1612,7 @@ function modalCreate(){
     } else if(S.streak>=30){
       hiddenBanner=`<div class="hidden-banner" data-act="openHiddenPick"><div class="n">🎉</div><div class="tx"><b>隱藏版存錢獸已解鎖！</b><small>點我從 3 款裡面挑 1 款加入收藏</small></div><div class="arr">→</div></div>`;
     } else {
-      hiddenBanner=`<div class="hidden-banner locked" aria-disabled="true"><div class="n">🔒</div><div class="tx"><b>隱藏版存錢獸</b><small>連續存錢 30 天，可解鎖 1 款（尚未解鎖）</small></div><div class="arr">🔒</div></div>`;
+      hiddenBanner=`<div class="hidden-banner locked" aria-disabled="true"><div class="n">🔒</div><div class="tx"><b>隱藏版存錢獸</b><small>累計存錢天數滿 30 天，可解鎖 1 款（尚未解鎖）</small></div><div class="arr">🔒</div></div>`;
     }
     body=`<h2 class="h2" style="margin-bottom:6px">選擇你的存錢獸</h2>
       <p class="muted" style="font-size:13px;font-weight:700;margin-bottom:12px">桌面把滑鼠移上去、手機點右上角 ⤢ 可放大看細節</p>
@@ -1776,7 +1781,7 @@ function modalHiddenUnlock(){
   return `<div class="celebrate">
     ${celConfetti()}
     <button class="xbtn cx" data-act="closeModal">✕</button>
-    <div class="cel-title">🎉 連續存錢 30 天！</div>
+    <div class="cel-title">🎉 累計存錢天數滿 30 天！</div>
     <div class="cel-sub">解鎖隱藏版存錢獸的資格了～<br>快去挑一隻加入你的收藏！</div>
     <div class="cel-acts">
       <button class="primary" data-act="openHiddenPick">去挑選我的隱藏版存錢獸</button>
@@ -2001,7 +2006,6 @@ document.addEventListener('click', e=>{
     case 'toggleReminder': S.reminderOn=!S.reminderOn; save(); render(); toast(S.reminderOn?'每日存錢提醒已開啟':'每日存錢提醒已關閉'); break;
     case 'editName': { const nm=prompt('輸入你的名字：', S.name==='你'?'':S.name); if(nm!=null){ const v=nm.trim(); S.name=v||'你'; ls.set(K.name,S.name); save(); render(); toast('名字已更新'); } break; }
     case 'pickThemeLive': applyTheme(id); save(); render(); break;
-    case 'widgetToast': toast(activeGoal()?'Widget 設定已開啟':'先建立一個目標吧'); break;
     case 'restart': if(confirm('要打掉重練嗎？（所有本命目標、記錄都會被清空，無法復原）')){ hardReset(); } break;
     /* modal close */
     case 'closeModal': advanceModal(); render(); break;
@@ -2349,5 +2353,6 @@ createFinish=function(){
    ============================================================ */
 render();
 </script>
+<script src="native-glue.js"></script>
 </body>
 </html>
