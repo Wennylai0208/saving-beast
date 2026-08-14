@@ -617,6 +617,13 @@ img{display:block;}
 .restart-card .ic{width:52px;height:52px;border-radius:16px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;flex:none;}
 .restart-card .tx{flex:1;} .restart-card .tx b{font-size:17px;font-weight:800;} .restart-card .tx small{display:block;font-size:12px;color:var(--muted);margin-top:4px;}
 .restart-card .arr{color:var(--muted);font-size:20px;}
+/* 頁尾小字連結（2026-08-14）：取代原本三張大卡片，放在卡片區塊外面 */
+.me-footer{padding:18px 20px 8px;text-align:center;}
+.me-footer .links{font-size:13px;line-height:2;}
+.me-footer .links a{color:var(--muted);text-decoration:none;}
+.me-footer .links a:active{color:var(--accent);}
+.me-footer .sep{color:var(--muted);opacity:.5;margin:0 6px;}
+.me-footer .ver{font-size:12px;color:var(--muted);opacity:.7;margin-top:6px;}
 
 /* ================= Modal 通用 ================= */
 .overlay{position:fixed;inset:0;height:100dvh;z-index:100;display:flex;justify-content:center;align-items:flex-end;}
@@ -1484,26 +1491,16 @@ function tabMe(){
       <div class="arr">→</div>
     </div>
 
-    <!-- 隱私權政策 / 聯絡客服 / 版本資訊 -->
-    <a class="card restart-card" href="https://saving-beast-privacy.pages.dev" target="_blank" rel="noopener">
-      <div class="ic">🔒</div>
-      <div class="tx"><b>隱私權政策</b><small>了解我們如何保護你的資料</small></div>
-      <div class="arr">→</div>
-    </a>
-    <a class="card restart-card" href="https://saving-beast-privacy.pages.dev/support" target="_blank" rel="noopener">
-      <div class="ic">💬</div>
-      <div class="tx"><b>支援與常見問題</b><small>使用上有疑問？先看這裡</small></div>
-      <div class="arr">→</div>
-    </a>
-    <a class="card restart-card" href="mailto:lailailand0208@gmail.com">
-      <div class="ic">✉</div>
-      <div class="tx"><b>聯絡客服</b><small>有問題或建議都歡迎寫信給我們</small></div>
-      <div class="arr">→</div>
-    </a>
-    <div class="card restart-card">
-      <div class="ic">ℹ</div>
-      <div class="tx"><b>版本資訊</b><small>蹲個本命</small></div>
-      <div class="arr">1.0</div>
+    <!-- 頁尾小字連結（原本是三張大卡片，2026-08-14 依太太要求改成頁面外框下的小連結） -->
+    <div class="me-footer">
+      <div class="links">
+        <a href="https://saving-beast-privacy.pages.dev" target="_blank" rel="noopener">隱私權政策</a>
+        <span class="sep">·</span>
+        <a href="https://wennylai0208.github.io/saving-beast/support.html" target="_blank" rel="noopener">支援與常見問題</a>
+        <span class="sep">·</span>
+        <a href="mailto:lailailand0208@gmail.com">聯絡客服</a>
+      </div>
+      <div class="ver">蹲個本命 1.0</div>
     </div>`;
 }
 
