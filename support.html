@@ -32,6 +32,12 @@
     color: #6b6270;
     font-size: 1.05rem;
     margin: 0 0 2rem;
+    /* 2026-08-16：避免最後幾個字被擠成孤行。balance 讓每行長度平均，
+       不支援的瀏覽器會忽略它，再靠下面那個 nowrap 的 span 保底。 */
+    text-wrap: balance;
+  }
+  .tagline .keep {
+    white-space: nowrap;
   }
   h2 {
     font-size: 1.2rem;
@@ -90,7 +96,7 @@
 
 <div class="icon">🐷</div>
 <h1>蹲個本命 — 支援與常見問題</h1>
-<p class="tagline">養一隻萌萌存錢獸，把存錢變成一件開心的小事。</p>
+<p class="tagline">養隻萌萌存錢獸，<span class="keep">讓存錢變成一件開心的事。</span></p>
 
 <div class="contact">
   <p><strong>需要幫忙嗎？</strong></p>
