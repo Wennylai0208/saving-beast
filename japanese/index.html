@@ -750,7 +750,7 @@ function homeView(){
   const b3=mkBtn('📕 複習錯題本 ('+STATE.mistakes.length+')','ghost block',()=>setTab('mistakes'));
   [b1,b2,b3].forEach(b=>{ b.style.marginBottom='10px'; quick.appendChild(b); });
   d.appendChild(quick);
-  d.innerHTML += '<div class="h2">十二首歌、十二個主題</div><p class="sub">夜に駆ける・群青・ハルジオン・怪物・祝福・アイドル・優しい彗星・三原色（YOASOBI）／晩餐歌・一輪花・愛の賞味期限（tuki.）。每首歌只取「主題」，配對應等級的單字文法，原創例句、絕不引用歌詞。</p>';
+  d.insertAdjacentHTML('beforeend', '<div class="h2">十二首歌、十二個主題</div><p class="sub">夜に駆ける・群青・ハルジオン・怪物・祝福・アイドル・優しい彗星・三原色（YOASOBI）／晩餐歌・一輪花・愛の賞味期限（tuki.）。每首歌只取「主題」，配對應等級的單字文法，原創例句、絕不引用歌詞。</p>');
   const cl=document.createElement('div'); cl.className='copyline';
   cl.textContent='歌詞有版權，請到官方MV聆聽；本app例句皆為原創';
   d.appendChild(cl);
@@ -803,7 +803,7 @@ function unitView(id){
   const d=document.createElement('div');
   const back=mkBtn('← 回課程列表','ghost sm',()=>setTab('lessons')); back.style.marginBottom='12px';
   d.appendChild(back);
-  d.innerHTML += '<span class="pill '+u.level.toLowerCase()+'">'+u.level+'</span>';
+  d.insertAdjacentHTML('beforeend', '<span class="pill '+u.level.toLowerCase()+'">'+u.level+'</span>');
   const title=document.createElement('div'); title.className='h1'; title.style.marginTop='8px';
   title.innerHTML = esc(u.song);
   d.appendChild(title);
@@ -887,7 +887,7 @@ function quizHubView(){
 function mockPickView(level){
   const d=document.createElement('div');
   const back=mkBtn('← 回測驗','ghost sm',()=>setTab('quiz')); back.style.marginBottom='12px'; d.appendChild(back);
-  d.innerHTML+='<div class="h1">'+level+' 模擬測驗</div><p class="sub">綜合文字語彙、文法、読解、聴解，共約 '+mockSize(level)+' 題。分數僅供練習估算合格與否，不代表正式成績。</p>';
+  d.insertAdjacentHTML('beforeend', '<div class="h1">'+level+' 模擬測驗</div><p class="sub">綜合文字語彙、文法、読解、聴解，共約 '+mockSize(level)+' 題。分數僅供練習估算合格與否，不代表正式成績。</p>');
   const startBtn=mkBtn('開始模擬測驗','btn primary block',()=>go('quizrun',{mode:'mock', level}));
   d.appendChild(startBtn);
   return d;
@@ -957,7 +957,7 @@ function kanaLessonView(id){
   const kl = KANA_LESSONS.find(k=>k.id===id);
   const d=document.createElement('div');
   const back=mkBtn('← 回課程列表','ghost sm',()=>setTab('lessons')); back.style.marginBottom='12px'; d.appendChild(back);
-  d.innerHTML += '<div class="h1">'+kl.title+'</div><p class="sub">點格子可以聽發音。學完可以直接做這課的小測驗。</p>';
+  d.insertAdjacentHTML('beforeend', '<div class="h1">'+kl.title+'</div><p class="sub">點格子可以聽發音。學完可以直接做這課的小測驗。</p>');
 
   const state = {mode:'hira'};
   const segwrap=document.createElement('div'); segwrap.className='segtab';
