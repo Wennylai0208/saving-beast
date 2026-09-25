@@ -233,15 +233,69 @@ function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const 
 function pick(arr,n){ return shuffle(arr).slice(0,n); }
 function reduceMotion(){ try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } }
 function ytSearch(q){ return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q); }
+
+// ---------- TTS 共用底層（iOS/Android 防呆版） ----------
+var _ttsWarm = false;
+function _ttsWarmup(){
+  if(_ttsWarm) return;
+  try{
+    var u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+    _ttsWarm = true;
+  }catch(e){}
+}
+try{
+  document.addEventListener('touchend', _ttsWarmup, {once:true, passive:true});
+  document.addEventListener('click', _ttsWarmup, {once:true});
+}catch(e){}
+try{
+  if('speechSynthesis' in window){
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = function(){ try{ window.speechSynthesis.getVoices(); }catch(e){} };
+  }
+}catch(e){}
+function _ttsPickVoice(lang){
+  try{
+    var vs = window.speechSynthesis.getVoices() || [];
+    if(!vs.length) return null;
+    var want = (lang||'en-US').toLowerCase().replace('_','-');
+    var base = want.split('-')[0];
+    var exact = null, loose = null;
+    for(var i=0;i<vs.length;i++){
+      var vl = (vs[i].lang||'').toLowerCase().replace('_','-');
+      if(!exact && vl === want) exact = vs[i];
+      if(!loose && vl.indexOf(base) === 0) loose = vs[i];
+    }
+    return exact || loose || null;
+  }catch(e){ return null; }
+}
+function _ttsRun(text, lang, rate){
+  var go = function(){
+    try{
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = lang;
+      u.rate = rate;
+      var v = _ttsPickVoice(lang);
+      if(v) u.voice = v;
+      u.onerror = function(){ try{ toast('發音失敗，請確認手機沒有切到靜音'); }catch(e){} };
+      window.speechSynthesis.speak(u);
+    }catch(e){ try{ toast('發音失敗，請確認手機沒有切到靜音'); }catch(e2){} }
+  };
+  if(window.speechSynthesis.speaking || window.speechSynthesis.pending){
+    try{ window.speechSynthesis.cancel(); }catch(e){}
+    setTimeout(go, 150);
+  } else {
+    go();
+  }
+}
 function speak(text){
   try{
-    if(!('speechSynthesis' in window)){ toast('這個瀏覽器不支援語音朗讀，建議用 Chrome 或 Safari 開'); return; }
-    window.speechSynthesis.cancel();
-    const plain = text.replace(/<[^>]+>/g,'').replace(/[\(（][^)）]*[\)）]/g,'');
-    const u = new SpeechSynthesisUtterance(plain);
-    u.lang='ja-JP'; u.rate=0.85;
-    window.speechSynthesis.speak(u);
-  }catch(e){ toast('語音播放失敗'); }
+    if(!('speechSynthesis' in window)){ toast('這個瀏覽器不支援語音朗讀，請改用 Safari 或 Chrome 開啟這個檔案'); return; }
+    _ttsWarmup();
+    var plain = text.replace(/<[^>]+>/g,'').replace(/[\(（][^)）]*[\)）]/g,'');
+    _ttsRun(plain, 'ja-JP', 0.85);
+  }catch(e){ try{ toast('發音失敗，請確認手機沒有切到靜音'); }catch(e2){} }
 }
 function toast(msg){
   const host = document.getElementById('toastHost');
