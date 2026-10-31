@@ -61,8 +61,6 @@ function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 function photo(k){return '<img class="ph" src="'+D.img[k]+'" alt=""><div class="cr">照片：'+esc(D.cred[k])+'</div>'}
 function stop(s){
  var h='<div class="card stop"><div class="hd"><span class="time">'+s.t+'</span><span class="ico">'+s.c+'</span><span class="nm">'+esc(s.n)+'</span></div>';
- if(s.b)h+='<ul>'+s.b.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
- (s.w||[]).forEach(function(x){h+='<div class="warn">⚠ '+esc(x)+'</div>'});
  if(s.img)h+=photo(s.img);if(s.img2)h+=photo(s.img2);
  if(s.tel||s.q){h+='<div class="btns">';
   if(s.tel)h+='<a class="btn tel" href="'+tel(s.tel)+'">📞 '+s.tel+'</a>';
@@ -79,7 +77,7 @@ function route(k){var r=RT[k],e=encodeURIComponent;
 var st=load();
 var P={};
 P.pre='<h2>📞 出發前一週要打的電話</h2>'+D.phones.map(function(p,i){
- return '<div class="card"><label class="ck'+(st["p"+i]?' done':'')+'"><input type="checkbox" data-k="p'+i+'"'+(st["p"+i]?' checked':'')+'><span class="tx"><b>'+(i+1)+'. '+esc(p[0])+'</b><br>'+esc(p[2])+'</span></label>'+
+ return '<div class="card"><label class="ck'+(st["p"+i]?' done':'')+'"><input type="checkbox" data-k="p'+i+'"'+(st["p"+i]?' checked':'')+'><span class="tx"><b>'+(i+1)+'. '+esc(p[0])+'</b></span></label>'+
  (p[1]?'<div class="btns"><a class="btn tel" href="'+tel(p[1])+'">📞 '+p[1]+'</a></div>':'')+'</div>'}).join('')+
  '<h2>🎒 要帶的東西</h2><div class="card"><ul>'+D.bring.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul></div>'+
  '<h2>🌧 天氣提醒</h2><div class="card"><div class="warn" style="margin:0">11月初九份常下雨、風大，出發前3天看氣象署「瑞芳區」天氣</div></div>';
